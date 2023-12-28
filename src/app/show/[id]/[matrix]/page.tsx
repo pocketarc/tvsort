@@ -1,7 +1,8 @@
-import { getShowDetails, getShowMetadata } from "@/server/getShowDetails";
+import { getShowDetails } from "@/server/getShowDetails";
 import ShowSorter from "@/components/ShowSorter";
 import type { Metadata, Viewport } from "next";
 import Header from "@/components/Header";
+import { getShowMetadata } from "@/utils/getShowMetadata";
 
 type Params = { id: string; matrix: string };
 
