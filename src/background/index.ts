@@ -4,6 +4,7 @@ import getKnex from "@/utils/getKnex";
 import getPgBoss from "@/utils/getPgBoss";
 import handlerGeneratePlotPoints from "@/background/handlers/handlerGeneratePlotPoints";
 import handlerSyncShow from "@/background/handlers/handlerSyncShow";
+import * as Sentry from "@sentry/core";
 
 async function main() {
     const knex = getKnex();
@@ -22,12 +23,20 @@ async function main() {
     );
 
     async function handlerQueueJobs(job: PgBoss.Job<JobData>) {
-        if (isSyncShowJob(job)) {
-            return handlerSyncShow(boss, knex, job);
-        } else if (isGeneratePlotPointsJob(job)) {
-            return handlerGeneratePlotPoints(boss, knex, job);
-        } else {
-            throw new Error(`Unknown job type: ${job.name}`);
+        try {
+            if (isSyncShowJob(job)) {
+                return handlerSyncShow(boss, knex, job);
+            } else if (isGeneratePlotPointsJob(job)) {
+                return handlerGeneratePlotPoints(boss, knex, job);
+            } else {
+                throw new Error(`Unknown job type: ${job.name}`);
+            }
+        } catch (e) {
+            // Log the error to Sentry, so we have some visibility into what's going on.
+            Sentry.captureException(e);
+
+            // Re-throw the error, so that PgBoss knows to retry the job.
+            throw e;
         }
     }
 }
