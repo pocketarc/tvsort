@@ -4,7 +4,14 @@ import getKnex from "@/utils/getKnex";
 import getPgBoss from "@/utils/getPgBoss";
 import handlerGeneratePlotPoints from "@/background/handlers/handlerGeneratePlotPoints";
 import handlerSyncShow from "@/background/handlers/handlerSyncShow";
-import * as Sentry from "@sentry/core";
+import * as Sentry from "@sentry/node";
+
+Sentry.init({
+    dsn: process.env["SENTRY_DSN"] as string,
+    enabled: process.env["NODE_ENV"] === "production",
+    tracesSampleRate: 0,
+    debug: false,
+});
 
 async function main() {
     const knex = getKnex();
