@@ -1,4 +1,3 @@
-import "server-only";
 import knex from "knex";
 import type { Knex } from "knex";
 import knexConfig from "../../knexfile";

@@ -2,9 +2,10 @@
 
 import type { FindShowsResponse } from "@/server/findShows";
 import ListShows from "@/components/ListShows";
-import { HourglassIcon, ScaleIcon, SearchIcon, TrophyIcon } from "lucide-react";
+import { ScaleIcon, SearchIcon, TrophyIcon } from "lucide-react";
 import { useFormStatus } from "react-dom";
 import { useState } from "react";
+import LoadingMessage from "@/components/LoadingMessage";
 
 type Props = {
     state: FindShowsResponse;
@@ -26,8 +27,10 @@ export default function SelectShow({ state }: Props) {
                     </label>
                     <div className="mt-2">
                         <input
-                            type="text"
+                            type="search"
+                            autoComplete={"off"}
                             name="query"
+                            required={true}
                             id="show"
                             onInput={(e) => setQuery(e.currentTarget.value)}
                             className="block w-full rounded-sm border-0 p-4 text-persian-900 ring-1 ring-persian-800 placeholder:text-gray-400 focus:ring-2 focus:ring-persian-900 sm:text-sm sm:leading-6"
@@ -63,12 +66,9 @@ export default function SelectShow({ state }: Props) {
                 </div>
             )}
             {showLoading && (
-                <div className="mt-16 flex-grow flex flex-col justify-center max-w-3xl mx-auto">
-                    <HourglassIcon strokeWidth={1} className="h-32 w-32 mx-auto text-persian-800 animate-spin-slow mb-8" />
-                    <div className="text-white text-center text-2xl text-shadow shadow-persian-900">
-                        Searching for shows matching <span className="font-bold">{query}</span>...
-                    </div>
-                </div>
+                <LoadingMessage className="mt-16 flex-grow flex flex-col justify-center max-w-3xl mx-auto">
+                    Searching for shows matching <span className="font-bold">{query}</span>...
+                </LoadingMessage>
             )}
             {showResults && <ListShows shows={state.shows} />}
         </div>

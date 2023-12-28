@@ -16,7 +16,7 @@ export class NeedUserInput<T extends SortableObject> extends Error {
 type Key = string;
 
 export class ComparisonMatrix<T extends SortableObject> {
-    protected items: T[];
+    public items: T[];
     public matrix: Record<Key, Record<Key, Comparison>>;
     public explicitCount: number;
 
@@ -117,6 +117,15 @@ export class ComparisonMatrix<T extends SortableObject> {
                 const value = subItemsB[c] as Comparison;
 
                 if (!subItemsA[c]) {
+                    /*
+                    This is here to help understand what's going on. Uncomment it if you want to see it in action.
+
+                    const itemA = this.items.find((item) => item.id == a)?.title;
+                    const itemB = this.items.find((item) => item.id == b)?.title;
+                    const itemC = this.items.find((item) => item.id == c)?.title;
+
+                    console.log(`We know that ${itemA} is ${value} ${itemB}, and ${itemB} is ${subItemsB[c]} ${itemC}, so ${itemA} is ${value} ${itemC}.`);
+                    */
                     this.updateSingle(a, c, value);
                 }
             });
@@ -130,6 +139,15 @@ export class ComparisonMatrix<T extends SortableObject> {
                 }
 
                 if (!subItemsA[c] && (subItemsA[b] == subItemsB[c] || subItemsB[c] == "=")) {
+                    /*
+                    This is here to help understand what's going on. Uncomment it if you want to see it in action.
+
+                    const itemA = this.items.find((item) => item.id == a)?.title;
+                    const itemB = this.items.find((item) => item.id == b)?.title;
+                    const itemC = this.items.find((item) => item.id == c)?.title;
+
+                    console.log(`We know that ${itemA} is ${value} ${itemB}, and ${itemB} is ${subItemsB[c]} ${itemC}, so ${itemA} is ${value} ${itemC}.`);
+                     */
                     this.updateSingle(a, c, value);
                 }
             });
@@ -137,8 +155,9 @@ export class ComparisonMatrix<T extends SortableObject> {
     }
 }
 
-export function monkeySort<T extends SortableObject>(items: T[], matrix: ComparisonMatrix<T>, failOnUnknown: boolean = true) {
-    const array = items;
+export function monkeySort<T extends SortableObject>(matrix: ComparisonMatrix<T>, failOnUnknown: boolean = true) {
+    // Clone the array, so we don't mutate the original.
+    const array = [...matrix.items];
 
     const part = (low: number, high: number) => {
         let i = low;

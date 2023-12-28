@@ -1,52 +1,61 @@
-import { OpenAI } from "openai";
-import { parseUnsafeJson } from "@/utils/parseUnsafeJson";
-import { zodToJsonSchema } from "@/utils/zodToJsonSchema";
 import { z } from "zod";
+import generateJson from "@/utils/generateJson";
+import * as Sentry from "@sentry/nextjs";
+import type { EpisodeModel, ShowModel } from "@/utils/types";
 
-const generateEpisodePlotPoints = async (show: string, summary: string): Promise<string[]> => {
-    console.log(`Generating plot points for ${show}...`);
+const generateEpisodePlotPoints = async (show: ShowModel, episode: EpisodeModel): Promise<string[]> => {
+    console.log(`Generating plot points for ${show.tmdb_id} (${show.title})...`);
 
-    if (!process.env["OPENAI_API_KEY"] || !process.env["OPENAI_ORGANIZATION_ID"]) {
-        throw new Error("OPENAI_API_KEY or OPENAI_ORGANIZATION_ID is not set.");
-    }
-
-    const client = new OpenAI({
-        organization: process.env["OPENAI_ORGANIZATION_ID"],
-        apiKey: process.env["OPENAI_API_KEY"],
+    const zodSchema = z.object({
+        type: z.literal("object"),
+        plot_points: z.array(z.string()),
     });
 
-    const zodSchema = z.array(z.string());
+    const summaries = [episode.description, ...episode.imdb_summaries];
 
-    const format = JSON.stringify(zodToJsonSchema(zodSchema));
+    // We do this because sometimes one of the IMDB summaries matches the episode description.
+    const uniqueSummaries = [...new Set(summaries)];
 
-    const systemPrompt = `You are an assistant who can ONLY respond in JSON. You respond with the following JSON schema specifications:
-${format}
+    const summary = uniqueSummaries.join("\n---\n");
+    const prompt = `Generate a short list of 3 different plot points mentioned in the given episode summaries of the show "${show.title}". Use very short sentences.`;
 
-Generate a short list of 3 different plot points in the given episodes of the show "${show}", very short sentences.
-`;
-
-    const response = await client.chat.completions.create({
-        model: "gpt-4-1106-preview",
-        messages: [
-            {
-                role: "system",
-                content: systemPrompt,
-            },
+    try {
+        const response = await generateJson(zodSchema, prompt, [
             {
                 role: "user",
                 content: summary,
             },
-        ],
-    });
+        ]);
 
-    if (response.choices[0]?.message.content) {
-        const object = parseUnsafeJson(response.choices[0].message.content);
-        if (object) {
-            return zodSchema.parse(object);
-        } else {
-            throw new Error(`Could not parse JSON. Response received was: ${response.choices[0].message.content}`);
-        }
-    } else {
+        console.log(`Generated. Making them shorter...`);
+
+        const result = await generateJson(zodSchema, prompt, [
+            {
+                role: "user",
+                content: summary,
+            },
+            {
+                role: "assistant",
+                content: JSON.stringify(response),
+            },
+            {
+                role: "user",
+                content: "Much shorter",
+            },
+        ]);
+
+        return result.plot_points.map((plotPoint) => {
+            plotPoint = plotPoint.trim();
+
+            // Add a period at the end of the sentence if it doesn't already have one.
+            if (!plotPoint.endsWith(".")) {
+                plotPoint += ".";
+            }
+
+            return plotPoint;
+        });
+    } catch (error) {
+        Sentry.captureException(error);
         return [];
     }
 };

@@ -28,13 +28,12 @@ export default function ShowSorter({ show, matrixId, matrix, explicitCount, epis
     const [results, setResults] = useState<Episode[]>();
     const [episodesToMatch, setEpisodesToMatch] = useState<[Episode, Episode] | undefined>();
 
-    const tryQuickSort = useCallback((episodes: Episode[], matrix: ComparisonMatrix<Episode>) => {
+    const tryQuickSort = useCallback((matrix: ComparisonMatrix<Episode>) => {
         try {
-            const result = monkeySort(episodes, matrix);
+            const result = monkeySort(matrix);
             setResults(result);
         } catch (e) {
             if (e instanceof NeedUserInput) {
-                monkeySort(episodes, matrix, false);
                 setEpisodesToMatch([e.a, e.b]);
             } else {
                 throw e;
@@ -43,8 +42,8 @@ export default function ShowSorter({ show, matrixId, matrix, explicitCount, epis
     }, []);
 
     useEffect(() => {
-        tryQuickSort(episodes, comparisonMatrix);
-    }, [tryQuickSort, episodes, comparisonMatrix]);
+        tryQuickSort(comparisonMatrix);
+    }, [tryQuickSort, comparisonMatrix]);
 
     const onClick = (a: Episode, b: Episode, value: Comparison) => {
         comparisonMatrix.set(a, b, value);
@@ -55,8 +54,11 @@ export default function ShowSorter({ show, matrixId, matrix, explicitCount, epis
         // Save the comparison to the database, so we can use it for statistics.
         void storeComparison(matrixId, a.id, b.id, value);
 
-        tryQuickSort(episodes, comparisonMatrix);
+        tryQuickSort(comparisonMatrix);
     };
+
+    const estimatedComparisons = Math.ceil(episodes.length * Math.log2(episodes.length));
+    const estimatedComparisonsLeft = estimatedComparisons - comparisonMatrix.explicitCount;
 
     return (
         <>
@@ -66,7 +68,7 @@ export default function ShowSorter({ show, matrixId, matrix, explicitCount, epis
                         show={show}
                         episode1={episodesToMatch[0]}
                         episode2={episodesToMatch[1]}
-                        comparisonsLeft={comparisonMatrix.getComparisonsLeft()}
+                        comparisonsLeft={estimatedComparisonsLeft}
                         onClick={onClick}
                     />
                 </div>

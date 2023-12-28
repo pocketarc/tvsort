@@ -1,4 +1,5 @@
 import type { Comparison } from "@/utils/monkeySort";
+import PgBoss from "pg-boss";
 
 export type ShowSummary = {
     id: string;
@@ -29,13 +30,15 @@ export type Episode = {
     title: string;
     description: string;
     plot_points: string[];
+    imdb_summaries: string[];
     images: string[];
 };
 
 export type ShowModel = {
     tmdb_id: string;
     first_aired_at: Date | null;
-    synced_at: Date;
+    synced_at: Date | null;
+    episode_count: number | null;
     title: string;
     image: string | null;
 };
@@ -47,9 +50,11 @@ export type EpisodeModel = {
     season: number;
     number: number;
     first_aired_at: Date | null;
+    synced_at: Date | null;
     title: string;
     description: string;
     plot_points: string[];
+    imdb_summaries: string[];
     images: string[];
 };
 
@@ -66,3 +71,25 @@ export type ComparisonModel = {
     comparison: Comparison;
     created_at: Date;
 };
+
+export type GeneratePlotPointsJobData = {
+    jobName: "generate-plot-points";
+    showId: string;
+    episodeId: string;
+    imdbId: string;
+};
+
+export type SyncShowJobData = {
+    jobName: "sync-show";
+    tmdbId: string;
+};
+
+export type JobData = GeneratePlotPointsJobData | SyncShowJobData;
+
+export function isGeneratePlotPointsJob(data: PgBoss.Job<JobData>): data is PgBoss.Job<GeneratePlotPointsJobData> {
+    return data.data.jobName === "generate-plot-points";
+}
+
+export function isSyncShowJob(data: PgBoss.Job<JobData>): data is PgBoss.Job<SyncShowJobData> {
+    return data.data.jobName === "sync-show";
+}

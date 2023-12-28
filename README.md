@@ -2,7 +2,7 @@
 
 TV Sort is a tool to help you find your favourite episode of a TV show. It uses a human-driven [sorting algorithm](https://en.wikipedia.org/wiki/Sorting_algorithm) to compare episodes against each other and find the best one.
 
-I built this over Christmas 2020 while discussing the best episodes of [Frasier](https://en.wikipedia.org/wiki/Frasier) with my family. It's hard to answer the question "what's your favourite episode?" because there are so many episodes, and so many of them are great. It's much easier to answer the question "which of these two episodes is better?" and then repeat that question a bunch of times until you have a sorted list.
+I built this over Christmas 2023 while discussing the best episodes of [Frasier](https://en.wikipedia.org/wiki/Frasier) with my family. It's hard to answer the question "what's your favourite episode?" because there are so many episodes, and so many of them are great. It's much easier to answer the question "which of these two episodes is better?" and then repeat that question a bunch of times until you have a sorted list.
 
 If you have any questions, comments, or feedback, please [tweet at me](https://twitter.com/pocketarc) or [send me an email](mailto:hello@pocketarc.com).
 

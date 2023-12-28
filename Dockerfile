@@ -42,9 +42,12 @@ COPY --from=builder /tvsort/public ./public
 RUN mkdir .next
 RUN chown nextjs:nodejs .next
 
+# Copy node_modules (for sharp) and Knexfile for migrations
+COPY --from=builder --chown=nextjs:nodejs /tvsort/knexfile.ts ./knexfile.ts
+COPY --from=builder --chown=nextjs:nodejs /tvsort/node_modules ./node_modules
+
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /tvsort/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /tvsort/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /tvsort/.next/static ./.next/static
 

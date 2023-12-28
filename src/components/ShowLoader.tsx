@@ -1,8 +1,14 @@
-import Header from "@/components/Header";
+import React from "react";
 import LoadingMessage from "@/components/LoadingMessage";
+import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-export default function Loading() {
+type Props = {
+    episodeCount: number | null | undefined;
+    episodesSynced: number;
+};
+
+export default function ShowLoader(_props: Props) {
     return (
         <main className="flex flex-col bg-persian-700 min-h-full">
             <div className="flex-grow flex flex-col">

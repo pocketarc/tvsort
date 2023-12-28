@@ -1,8 +1,6 @@
-import { getShowDetails } from "@/server/getShowDetails";
-import ShowSorter from "@/components/ShowSorter";
 import type { Metadata, Viewport } from "next";
-import Header from "@/components/Header";
 import { getShowMetadata } from "@/utils/getShowMetadata";
+import ShowSorterContainer from "@/components/ShowSorterContainer";
 
 type Params = { id: string; matrix: string };
 
@@ -53,13 +51,5 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 }
 
 export default async function Page({ params: { id, matrix: matrixId } }: { params: Params }) {
-    const { show, matrix, explicitCount } = await getShowDetails(matrixId, id);
-    const episodes = show.seasons.flatMap((season) => season.episodes);
-
-    return (
-        <div className="h-full flex flex-col">
-            <Header title={show.title} subtitle="Which of these episodes is better?" />
-            <ShowSorter show={show} matrixId={matrixId} matrix={matrix} explicitCount={explicitCount} episodes={episodes} />
-        </div>
-    );
+    return <ShowSorterContainer id={id} matrixId={matrixId} />;
 }

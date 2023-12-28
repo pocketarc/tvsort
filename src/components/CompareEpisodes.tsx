@@ -15,7 +15,7 @@ type Props = {
 export default function CompareEpisodes({ show, episode1, episode2, comparisonsLeft, onClick }: Props) {
     return (
         <>
-            <div className="flex flex-col md:flex-row md:space-x-12 h-full">
+            <div className="flex flex-col md:flex-row md:space-x-12 h-full w-full">
                 <div className="flex flex-col flex-grow">
                     <div className="flex flex-col sm:flex-row flex-grow">
                         <div className="sm:w-1/2 flex-grow p-2 sm:p-12">

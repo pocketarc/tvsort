@@ -20,12 +20,13 @@ export default function Episode({ episode, standing }: Props) {
                 )}
                 <div>
                     <h2 className="flex text-3xl font-title text-stone-900">
-                        <span className="flex-grow">{episode.title}</span>
                         {episode.imdb_id && (
                             <Link target="_blank" href={`https://www.imdb.com/title/${episode.imdb_id}`}>
+                                <span className="flex-grow">{episode.title}</span>
                                 <ExternalLinkIcon strokeWidth={1} className="inline-block ml-2 h-6 w-6 text-stone-500" />
                             </Link>
                         )}
+                        {!episode.imdb_id && <span className="flex-grow">{episode.title}</span>}
                     </h2>
                     <p className="-mt-1 text-sm text-stone-500">
                         Season {episode.season}, Episode {episode.number}
@@ -33,13 +34,16 @@ export default function Episode({ episode, standing }: Props) {
                     </p>
                 </div>
             </div>
-            <ul className="sm:divide-y sm:divide-stone-200 text-sm text-stone-900">
-                {episode.plot_points.map((plotPoint) => (
-                    <li key={plotPoint} className="sm:py-2">
-                        {plotPoint}
-                    </li>
-                ))}
-            </ul>
+            {episode.plot_points.length === 0 && <p className="text-sm text-stone-900">{episode.description}</p>}
+            {episode.plot_points.length > 0 && (
+                <ul className="sm:divide-y sm:divide-stone-200 text-sm text-stone-900">
+                    {episode.plot_points.map((plotPoint) => (
+                        <li key={plotPoint} className="sm:py-2">
+                            {plotPoint}
+                        </li>
+                    ))}
+                </ul>
+            )}
             <ul className="grid grid-cols-2 gap-4">
                 {episode.images.map((image) => (
                     <div key={image}>
