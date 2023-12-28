@@ -32,9 +32,9 @@ async function main() {
     async function handlerQueueJobs(job: PgBoss.Job<JobData>) {
         try {
             if (isSyncShowJob(job)) {
-                return handlerSyncShow(boss, knex, job);
+                await handlerSyncShow(boss, knex, job);
             } else if (isGeneratePlotPointsJob(job)) {
-                return handlerGeneratePlotPoints(boss, knex, job);
+                await handlerGeneratePlotPoints(boss, knex, job);
             } else {
                 throw new Error(`Unknown job type: ${job.name}`);
             }

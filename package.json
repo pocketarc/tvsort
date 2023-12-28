@@ -8,7 +8,8 @@
         "playground": "env-cmd -f .env tsx playground.ts",
         "knex": "env-cmd -f .env tsx node_modules/.bin/knex",
         "start": "env-cmd -f .env next start",
-        "jobs": "env-cmd -f .env tsx src/background/index.ts",
+        "jobs": "env-cmd -f .env tsx watch src/background/index.ts",
+        "jobs-prod": "NODE_ENV=production tsx src/background/index.ts",
         "lint": "next lint"
     },
     "dependencies": {

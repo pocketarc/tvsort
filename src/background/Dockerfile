@@ -29,4 +29,4 @@ COPY ./.env ./.env
 COPY ./tsconfig.json ./tsconfig.json
 
 WORKDIR /tvsort
-CMD ["npm", "run", "jobs"]
+CMD ["npm", "run", "jobs-prod"]
