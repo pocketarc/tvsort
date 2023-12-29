@@ -17,12 +17,18 @@ export async function generateMetadata(): Promise<Metadata> {
     const title = `TV Sort`;
     const description = `Which episode is -actually- your favourite? 🤔`;
 
+    if (!process.env["BASE_URL"]) {
+        throw new Error("BASE_URL is not set.");
+    }
+
+    const baseUrl = process.env["BASE_URL"];
+
     return {
-        metadataBase: new URL("https://tvsort.com"),
+        metadataBase: new URL(baseUrl),
         title,
         description,
         alternates: {
-            canonical: `https://tvsort.com`,
+            canonical: baseUrl,
         },
         openGraph: {
             type: "website",
@@ -38,10 +44,17 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+    if (!process.env["BASE_URL"]) {
+        throw new Error("BASE_URL is not set.");
+    }
+
+    const baseUrl = process.env["BASE_URL"];
+    const domain = new URL(baseUrl).hostname;
+
     return (
         <html lang="en" className="h-full">
             <body className={`${inter.variable} ${bebas.variable} h-full`}>{children}</body>
-            <Script src="https://tvsort.com/js/script.js" strategy="afterInteractive" data-domain="tvsort.com" data-api="/api/event" />
+            <Script src={`${baseUrl}/js/script.js`} strategy="afterInteractive" data-domain={domain} data-api="/api/event" />
         </html>
     );
 }

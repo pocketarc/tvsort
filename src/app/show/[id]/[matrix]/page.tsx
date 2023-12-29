@@ -16,24 +16,19 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     const title = `${show.title} - TV Sort`;
     const description = `Which episode of ${show.title} is your favourite?`;
 
+    if (!process.env["BASE_URL"]) {
+        throw new Error("BASE_URL is not set.");
+    }
+
     return {
-        metadataBase: new URL("https://tvsort.com"),
+        metadataBase: new URL(process.env["BASE_URL"]),
         title,
         description,
-        icons: "/icon.svg",
         alternates: {
-            canonical: `https://tvsort.com/show/${params.id}`,
+            canonical: `${process.env["BASE_URL"]}/show/${params.id}`,
         },
         openGraph: {
             type: "website",
-            images: [
-                {
-                    url: show.image,
-                    width: 342,
-                    height: 513,
-                    alt: `Poster for ${show.title}`,
-                },
-            ],
         },
         twitter: {
             card: "summary",
@@ -41,11 +36,6 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
             description: description,
             creator: "@pocketarc",
             site: "@pocketarc",
-            images: {
-                url: show.image,
-                width: 342,
-                height: 513,
-            },
         },
     };
 }
