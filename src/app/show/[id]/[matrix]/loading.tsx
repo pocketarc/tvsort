@@ -8,7 +8,9 @@ export default function Loading() {
             <div className="flex-grow flex flex-col">
                 <Header />
                 <div className="flex-grow flex flex-col justify-center max-w-3xl mx-auto">
-                    <LoadingMessage className="-mt-8">Loading the show&apos;s details.</LoadingMessage>
+                    <LoadingMessage spin={false} className="-mt-8">
+                        Loading the show&apos;s details.
+                    </LoadingMessage>
                 </div>
             </div>
             <Footer />
