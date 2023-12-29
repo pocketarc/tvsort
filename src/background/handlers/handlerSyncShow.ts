@@ -87,7 +87,7 @@ export default async function handlerSyncShow(boss: PgBoss, knex: Knex, job: PgB
                                 images: JSON.stringify(data.images) as unknown as string[],
                                 imdb_id: data.imdb_id,
                                 imdb_summaries: JSON.stringify(data.imdb_summaries) as unknown as string[],
-                                plot_points: JSON.stringify(data.plot_points) as unknown as string[],
+                                main_plot_points: JSON.stringify(data.plot_points) as unknown as string[],
                             })
                             .onConflict("tmdb_id")
                             .ignore()

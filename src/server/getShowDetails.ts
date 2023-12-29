@@ -57,7 +57,7 @@ export const getShowDetails = async (matrixId: string, showId: string): Promise<
                     })
                     .map((episode) => {
                         // If the episode has no plot points, then we need to generate them.
-                        if (episode.plot_points.length === 0) {
+                        if (episode.main_plot_points.length === 0) {
                             const jobData: GeneratePlotPointsJobData = {
                                 jobName: "generate-plot-points",
                                 showId: episode.show_id,
@@ -87,7 +87,7 @@ export const getShowDetails = async (matrixId: string, showId: string): Promise<
                                     id: episode.tmdb_id,
                                     imdb_id: episode.imdb_id,
                                     imdb_summaries: episode.imdb_summaries,
-                                    plot_points: episode.plot_points,
+                                    plot_points: episode.main_plot_points,
                                 },
                             ],
                         };
