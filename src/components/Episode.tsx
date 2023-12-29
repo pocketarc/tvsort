@@ -29,7 +29,7 @@ export default function Episode({ episode, standing }: Props) {
                         {!episode.imdb_id && <span className="flex-grow">{episode.title}</span>}
                     </h2>
                     <p className="-mt-1 text-sm text-stone-500">
-                        Season {episode.season}, Episode {episode.number}
+                        S{episode.season}.E{episode.number}
                         {episode.first_aired_at && <span className="ml-2 text-stone-400">{intlFormat(episode.first_aired_at)}</span>}
                     </p>
                 </div>

@@ -53,9 +53,13 @@ export type EpisodeModel = {
     synced_at: Date | null;
     title: string;
     description: string;
-    plot_points: string[];
+    all_plot_points: string[];
+    main_plot_points: string[];
     imdb_summaries: string[];
+    imdb_synopsis: string[];
     images: string[];
+    wikipedia_url: string | null;
+    wikipedia_text: string | null;
 };
 
 export type MatrixModel = {

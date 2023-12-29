@@ -117,7 +117,7 @@ export default function Results({ show, results }: Props) {
                                             {!episode.imdb_id && <span>{episode.title}</span>}
                                         </div>
                                         <div className="text-sm text-stone-500">
-                                            Season {episode.season}, Episode {episode.number}{" "}
+                                            S{episode.season}.{episode.number}{" "}
                                             {episode.first_aired_at && <span className="ml-2 text-stone-400">{intlFormat(episode.first_aired_at)}</span>}
                                         </div>
                                     </div>
