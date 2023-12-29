@@ -2,8 +2,12 @@ import type { MetadataRoute } from "next";
 import getKnex from "@/utils/getKnex";
 import type { ShowModel } from "@/utils/types";
 import { formatRFC3339 } from "date-fns";
+import { headers } from "next/headers";
 
 export async function GET() {
+    // This is here to force the route to be dynamic.
+    headers();
+
     if (!process.env["BASE_URL"]) {
         throw new Error("BASE_URL is not set.");
     }
