@@ -45,4 +45,11 @@ export default async function handlerGeneratePlotPoints(_boss: PgBoss, knex: Kne
         .where({
             tmdb_id: job.data.episodeId,
         });
+
+    // Update the show's synced_at timestamp to reflect the fact that we've synced an episode
+    await knex<ShowModel>("shows")
+        .update({
+            synced_at: new Date(),
+        })
+        .where("tmdb_id", job.data.showId);
 }
