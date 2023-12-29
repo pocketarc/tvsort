@@ -1,12 +1,13 @@
 "use server";
 
-import type { ComparisonModel, EpisodeModel, MatrixModel, Show } from "@/utils/types";
+import type { ComparisonModel, EpisodeModel, GeneratePlotPointsJobData, MatrixModel, Show } from "@/utils/types";
 import getKnex from "@/utils/getKnex";
 import type { Comparison } from "@/utils/monkeySort";
 import getShowImage from "@/utils/getShowImage";
 import { withServerActionInstrumentation } from "@sentry/nextjs";
 import { headers } from "next/headers";
 import getShowRecord from "@/utils/getShowRecord";
+import getPgBoss from "@/utils/getPgBoss";
 
 export type GetShowDetailsResponse = {
     show: Show;
@@ -55,6 +56,24 @@ export const getShowDetails = async (matrixId: string, showId: string): Promise<
                         return episode.season !== 0;
                     })
                     .map((episode) => {
+                        // If the episode has no plot points, then we need to generate them.
+                        if (episode.plot_points.length === 0) {
+                            const jobData: GeneratePlotPointsJobData = {
+                                jobName: "generate-plot-points",
+                                showId: episode.show_id,
+                                episodeId: episode.tmdb_id,
+                                imdbId: episode.imdb_id,
+                            };
+
+                            getPgBoss().then((pgboss) => {
+                                pgboss.send("default", jobData, {
+                                    retryLimit: 3,
+                                    retryBackoff: true,
+                                    expireInHours: 24,
+                                });
+                            });
+                        }
+
                         return {
                             number: episode.season,
                             episodes: [
