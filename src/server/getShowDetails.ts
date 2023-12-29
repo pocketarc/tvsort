@@ -1,11 +1,12 @@
 "use server";
 
-import type { ComparisonModel, EpisodeModel, MatrixModel, Show, ShowModel } from "@/utils/types";
+import type { ComparisonModel, EpisodeModel, MatrixModel, Show } from "@/utils/types";
 import getKnex from "@/utils/getKnex";
 import type { Comparison } from "@/utils/monkeySort";
 import getShowImage from "@/utils/getShowImage";
 import { withServerActionInstrumentation } from "@sentry/nextjs";
 import { headers } from "next/headers";
+import getShowRecord from "@/utils/getShowRecord";
 
 export type GetShowDetailsResponse = {
     show: Show;
@@ -39,12 +40,7 @@ export const getShowDetails = async (matrixId: string, showId: string): Promise<
             }
 
             const knex = getKnex();
-
-            const result = await knex<ShowModel>("shows").select().where("tmdb_id", showId).whereNotNull("synced_at").first();
-
-            if (!result) {
-                return undefined;
-            }
+            const result = await getShowRecord(knex, showId);
 
             const episodes = await knex<EpisodeModel>("episodes").select().where("show_id", showId).orderBy("season").orderBy("number");
 

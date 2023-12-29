@@ -1,12 +1,13 @@
 "use server";
 
-import type { EpisodeModel, ShowModel, ShowSummary, SyncShowJobData } from "@/utils/types";
+import type { EpisodeModel, ShowSummary, SyncShowJobData } from "@/utils/types";
 import getKnex from "@/utils/getKnex";
 import getShowImage from "@/utils/getShowImage";
 import { withServerActionInstrumentation } from "@sentry/nextjs";
 import { headers } from "next/headers";
 import { getShowDetails, type GetShowDetailsResponse } from "@/server/getShowDetails";
 import getPgBoss from "@/utils/getPgBoss";
+import getShowRecord from "@/utils/getShowRecord";
 
 export type GetShowStateResponse = {
     show: ShowSummary;
@@ -32,21 +33,8 @@ export const getShowState = async (matrixId: string, showId: string): Promise<Ge
             console.log("Getting show state for", showId);
 
             const knex = getKnex();
-            const result = await knex<ShowModel>("shows").select().where("tmdb_id", showId).first();
 
-            if (!result) {
-                return {
-                    show: {
-                        id: showId,
-                        title: "Unknown",
-                        image: getShowImage("Unknown", null),
-                        first_aired_at: null,
-                    },
-                    synced: false,
-                    episodeCount: null,
-                    episodesSynced: 0,
-                };
-            }
+            const result = await getShowRecord(knex, showId);
 
             const buffer = await knex<EpisodeModel>("episodes").select().where("show_id", showId).count();
             let episodesSynced = buffer[0]?.["count"];
@@ -85,7 +73,10 @@ export const getShowState = async (matrixId: string, showId: string): Promise<Ge
                 tmdbId: showId,
             };
 
-            const jobId = await boss.send("default", jobData);
+            const jobId = await boss.send("default", jobData, {
+                // Make this job take precedence over generate-plot-points jobs.
+                priority: 2,
+            });
 
             console.log(`Sent sync-show job ${jobId}`);
             console.log("Show isn't synced yet, sending back summary.");
