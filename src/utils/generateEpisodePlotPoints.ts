@@ -16,8 +16,8 @@ const generateEpisodePlotPoints = async (show: ShowModel, episode: EpisodeModel)
     // We do this because sometimes one of the IMDB summaries matches the episode description.
     const uniqueSummaries = [...new Set(summaries)];
 
-    const summary = uniqueSummaries.join("\n---\n");
-    const prompt = `Generate a short list of 3 different plot points mentioned in the given episode summaries of the show "${show.title}". Use very short sentences.`;
+    const summary = uniqueSummaries.join(" ").trim();
+    const prompt = `Generate a short list of all the different plot points mentioned in the given episode summaries of the show "${show.title}". Use very short sentences.`;
 
     try {
         const response = await generateJson(zodSchema, prompt, [
@@ -27,7 +27,7 @@ const generateEpisodePlotPoints = async (show: ShowModel, episode: EpisodeModel)
             },
         ]);
 
-        console.log(`Generated. Making them shorter...`);
+        console.log(`Grabbed all points. Now grabbing the 3 most different points...`);
 
         const result = await generateJson(zodSchema, prompt, [
             {
@@ -40,7 +40,7 @@ const generateEpisodePlotPoints = async (show: ShowModel, episode: EpisodeModel)
             },
             {
                 role: "user",
-                content: "Much shorter",
+                content: "List the 3 most different points. Use much shorter sentences.",
             },
         ]);
 
