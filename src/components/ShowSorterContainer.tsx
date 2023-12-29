@@ -19,7 +19,7 @@ export default function ShowSorterContainer({ id, matrixId }: Props) {
             {isLoading && <ShowLoader episodeCount={episodeCount} episodesSynced={episodesSynced} />}
             {!isLoading && details && show && (
                 <div className="h-full flex flex-col">
-                    <Header title={show.title} subtitle="Which of these episodes is better?" />
+                    <Header showTitleOnMobile={false} title={show.title} subtitle="Which of these episodes is better?" />
                     <ShowSorter
                         show={details.show}
                         matrixId={matrixId}
