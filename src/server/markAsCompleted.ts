@@ -27,22 +27,23 @@ export default async function markAsCompleted<Key extends string>(matrixId: stri
             // For now, I'm doing it this way and if there's ever a Sentry error caused by someone
             // trying to submit invalid data, I'll add validation then.
 
-            for (const [episodeAId, episodeBComparisons] of Object.entries(matrix)) {
-                for (const [episodeBId, comparison] of Object.entries(episodeBComparisons as Record<Key, Comparison>)) {
-                    await knex<ComparisonModel>("comparisons")
-                        .insert({
+            await knex.transaction(async (trx) => {
+                await trx<ComparisonModel>("comparisons").delete().where("matrix_id", matrixId);
+
+                for (const [episodeAId, episodeBComparisons] of Object.entries(matrix)) {
+                    for (const [episodeBId, comparison] of Object.entries(episodeBComparisons as Record<Key, Comparison>)) {
+                        await trx<ComparisonModel>("comparisons").insert({
                             matrix_id: matrixId,
                             episode_a_id: episodeAId,
                             episode_b_id: episodeBId,
                             comparison: comparison as Comparison,
-                        })
-                        .onConflict(["matrix_id", "episode_a_id", "episode_b_id"])
-                        .merge(["comparison"]);
+                        });
+                    }
                 }
-            }
 
-            await knex<MatrixModel>("matrices").where("id", matrixId).update({
-                completed_at: new Date(),
+                await trx<MatrixModel>("matrices").where("id", matrixId).update({
+                    completed_at: new Date(),
+                });
             });
         },
     );

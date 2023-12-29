@@ -93,14 +93,8 @@ export const getShowDetails = async (matrixId: string, showId: string): Promise<
                     matrix[comparison.episode_a_id] = {};
                 }
 
-                if (!matrix[comparison.episode_b_id]) {
-                    matrix[comparison.episode_b_id] = {};
-                }
-
                 // @ts-expect-error - It cannot be undefined; it's been set above.
                 matrix[comparison.episode_a_id][comparison.episode_b_id] = comparison.comparison;
-                // @ts-expect-error - It cannot be undefined; it's been set above.
-                matrix[comparison.episode_b_id][comparison.episode_a_id] = comparison.comparison;
 
                 explicitCount++;
             }
