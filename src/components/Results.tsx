@@ -102,7 +102,7 @@ export default function Results({ show, results }: Props) {
                                 <span className="bg-white px-2 text-sm text-gray-500">The full list, for the data nerds</span>
                             </div>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 px-4 py-12 sm:p-12 rounded-md h-full">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 py-12 sm:p-12 rounded-md h-full">
                             {results.map((episode, index) => (
                                 <div key={index} className="flex">
                                     <div className="text-stone-400 mr-2">{index + 1}</div>
