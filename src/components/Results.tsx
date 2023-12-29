@@ -23,8 +23,8 @@ export default function Results({ show, results }: Props) {
 
     const shareResults = async () => {
         const shareData: ShareData = {
-            title: `My favourite episodes of ${show.title} are ${firstPlace.title} and ${secondPlace.title}!`,
-            text: `My favourite episodes of ${show.title} are ${firstPlace.title} and ${secondPlace.title}!`,
+            title: `Check out my ranked list of ${show.title} episodes`,
+            text: `Check out my ranked list of ${show.title} episodes`,
             url: window.location.href,
         };
 
@@ -84,7 +84,7 @@ export default function Results({ show, results }: Props) {
 
                     <div className="px-4">
                         <button onClick={shareResults} className="w-full my-32 bg-persian-700 rounded-md p-8 text-white">
-                            <span className="block text-3xl sm:text-7xl font-title text-shadow shadow-persian-950">Share your results</span>
+                            <span className="block text-3xl sm:text-7xl leading-tight font-title text-shadow shadow-persian-950">Share your results</span>
                             <span>
                                 Tell everyone how much you love <span className="font-bold">{firstPlace.title}</span>. <br className="hidden sm:block" />
                                 Or how much you hate <span className="font-bold">{lastPlace.title}</span>.
