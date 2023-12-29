@@ -1,6 +1,9 @@
 import type { Episode as EpisodeType, Show } from "@/utils/types";
 import Episode from "@/components/Episode";
 import Footer from "@/components/Footer";
+import Link from "next/link";
+import { ExternalLinkIcon } from "lucide-react";
+import { intlFormat } from "date-fns/intlFormat";
 
 type Props = {
     show: Show;
@@ -99,14 +102,23 @@ export default function Results({ show, results }: Props) {
                                 <span className="bg-white px-2 text-sm text-gray-500">The full list, for the data nerds</span>
                             </div>
                         </div>
-                        <div className="space-y-4 px-4 py-12 sm:p-12 rounded-md h-full">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 px-4 py-12 sm:p-12 rounded-md h-full">
                             {results.map((episode, index) => (
                                 <div key={index} className="flex">
                                     <div className="text-stone-400 mr-2">{index + 1}</div>
                                     <div>
-                                        <div className="text-stone-900 font-semibold">{episode.title}</div>
+                                        <div className="text-stone-900 font-semibold">
+                                            {episode.imdb_id && (
+                                                <Link target="_blank" href={`https://www.imdb.com/title/${episode.imdb_id}`}>
+                                                    <span className="flex-grow">{episode.title}</span>
+                                                    <ExternalLinkIcon strokeWidth={1} className="inline-block ml-2 -mt-1 h-4 w-4 text-stone-500" />
+                                                </Link>
+                                            )}
+                                            {!episode.imdb_id && <span>{episode.title}</span>}
+                                        </div>
                                         <div className="text-sm text-stone-500">
-                                            Season {episode.season}, Episode {episode.number}
+                                            Season {episode.season}, Episode {episode.number}{" "}
+                                            {episode.first_aired_at && <span className="ml-2 text-stone-400">{intlFormat(episode.first_aired_at)}</span>}
                                         </div>
                                     </div>
                                 </div>

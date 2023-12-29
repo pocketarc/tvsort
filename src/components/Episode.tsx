@@ -23,7 +23,7 @@ export default function Episode({ episode, standing }: Props) {
                         {episode.imdb_id && (
                             <Link target="_blank" href={`https://www.imdb.com/title/${episode.imdb_id}`}>
                                 <span className="flex-grow">{episode.title}</span>
-                                <ExternalLinkIcon strokeWidth={1} className="inline-block ml-2 h-6 w-6 text-stone-500" />
+                                <ExternalLinkIcon strokeWidth={1} className="inline-block -mt-1 ml-2 h-6 w-6 text-stone-500" />
                             </Link>
                         )}
                         {!episode.imdb_id && <span className="flex-grow">{episode.title}</span>}
