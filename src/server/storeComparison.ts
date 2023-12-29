@@ -23,12 +23,15 @@ export const storeComparison = async (matrixId: string, episodeAId: string, epis
         async () => {
             const knex = getKnex();
 
-            await knex<ComparisonModel>("comparisons").insert({
-                matrix_id: matrixId,
-                episode_a_id: episodeAId,
-                episode_b_id: episodeBId,
-                comparison: comparison,
-            });
+            await knex<ComparisonModel>("comparisons")
+                .insert({
+                    matrix_id: matrixId,
+                    episode_a_id: episodeAId,
+                    episode_b_id: episodeBId,
+                    comparison: comparison,
+                })
+                .onConflict(["matrix_id", "episode_a_id", "episode_b_id"])
+                .merge(["comparison"]);
         },
     );
 };

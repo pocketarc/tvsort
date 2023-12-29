@@ -23,6 +23,7 @@ export default function ShowSorterContainer({ id, matrixId }: Props) {
                     <ShowSorter
                         show={details.show}
                         matrixId={matrixId}
+                        isComplete={details.isComplete}
                         matrix={details.matrix}
                         explicitCount={details.explicitCount}
                         episodes={details.show.seasons.flatMap((season) => season.episodes)}

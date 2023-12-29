@@ -6,16 +6,18 @@ import CompareEpisodes from "@/components/CompareEpisodes";
 import { type Comparison, ComparisonMatrix, monkeySort, NeedUserInput } from "@/utils/monkeySort";
 import Results from "@/components/Results";
 import { storeComparison } from "@/server/storeComparison";
+import markAsCompleted from "@/server/markAsCompleted";
 
 type Props = {
     show: Show;
     episodes: Episode[];
     explicitCount: number;
+    isComplete: boolean;
     matrixId: string;
     matrix: Record<string, Record<string, Comparison>>;
 };
 
-export default function ShowSorter({ show, matrixId, matrix, explicitCount, episodes }: Props) {
+export default function ShowSorter({ show, matrixId, isComplete, matrix, explicitCount, episodes }: Props) {
     const comparisonMatrix = useMemo(() => {
         const matrixFromStorage = typeof window !== "undefined" ? localStorage.getItem(`matrix-${matrixId}`) : null;
 
@@ -28,18 +30,27 @@ export default function ShowSorter({ show, matrixId, matrix, explicitCount, epis
     const [results, setResults] = useState<Episode[]>();
     const [episodesToMatch, setEpisodesToMatch] = useState<[Episode, Episode] | undefined>();
 
-    const tryQuickSort = useCallback((matrix: ComparisonMatrix<Episode>) => {
-        try {
-            const result = monkeySort(matrix);
-            setResults(result);
-        } catch (e) {
-            if (e instanceof NeedUserInput) {
-                setEpisodesToMatch([e.a, e.b]);
-            } else {
-                throw e;
+    const tryQuickSort = useCallback(
+        (matrix: ComparisonMatrix<Episode>) => {
+            try {
+                const result = monkeySort(matrix);
+
+                // Mark the matrix as complete only if it's not already complete.
+                if (!isComplete) {
+                    void markAsCompleted(matrixId, matrix.matrix);
+                }
+
+                setResults(result);
+            } catch (e) {
+                if (e instanceof NeedUserInput) {
+                    setEpisodesToMatch([e.a, e.b]);
+                } else {
+                    throw e;
+                }
             }
-        }
-    }, []);
+        },
+        [isComplete, matrixId],
+    );
 
     useEffect(() => {
         tryQuickSort(comparisonMatrix);

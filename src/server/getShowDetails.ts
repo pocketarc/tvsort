@@ -13,6 +13,7 @@ export type GetShowDetailsResponse = {
     matrixId: string;
     explicitCount: number;
     matrix: Record<string, Record<string, Comparison>>;
+    isComplete: boolean;
 };
 
 export type ShowMetadata = {
@@ -109,6 +110,7 @@ export const getShowDetails = async (matrixId: string, showId: string): Promise<
                 matrixId,
                 explicitCount,
                 matrix,
+                isComplete: matrixRecord?.completed_at !== null,
             };
         },
     );

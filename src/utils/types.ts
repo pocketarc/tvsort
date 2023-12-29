@@ -62,6 +62,7 @@ export type MatrixModel = {
     id: string;
     show_id: string;
     created_at: Date;
+    completed_at: Date | null;
 };
 
 export type ComparisonModel = {
