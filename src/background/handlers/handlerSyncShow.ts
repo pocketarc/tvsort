@@ -2,8 +2,8 @@ import type { Episode, EpisodeModel, GeneratePlotPointsJobData, ShowModel, SyncS
 import type PgBoss from "pg-boss";
 import type { Knex } from "knex";
 import { TMDB } from "tmdb-ts";
-import { parse as parseDate } from "date-fns/parse";
 import type { Image, Images } from "tmdb-ts/dist/types";
+import getShowRecord from "@/utils/getShowRecord";
 
 export default async function handlerSyncShow(boss: PgBoss, knex: Knex, job: PgBoss.Job<SyncShowJobData>) {
     if (!process.env["TMDB_API_ACCESS_TOKEN"]) {
@@ -22,18 +22,8 @@ export default async function handlerSyncShow(boss: PgBoss, knex: Knex, job: PgB
     const tmdb = new TMDB(process.env["TMDB_API_ACCESS_TOKEN"]);
     const show = await tmdb.tvShows.details(parseInt(showId));
 
-    const showImage = show.poster_path ? `https://image.tmdb.org/t/p/w342/${show.poster_path}` : null;
-
-    await knex<ShowModel>("shows")
-        .insert({
-            tmdb_id: show.id.toString(),
-            title: show.name,
-            first_aired_at: parseDate(show.first_air_date, "yyyy-MM-dd", new Date()),
-            image: showImage,
-            episode_count: show.number_of_episodes,
-        })
-        .onConflict("tmdb_id")
-        .ignore();
+    // Insert the show record if it doesn't exist.
+    await getShowRecord(knex, show.id.toString());
 
     await Promise.all(
         show.seasons
@@ -66,7 +56,7 @@ export default async function handlerSyncShow(boss: PgBoss, knex: Knex, job: PgB
                             number: episode.episode_number,
                             title: episode.name,
                             description: episode.overview,
-                            first_aired_at: new Date(episode.air_date),
+                            first_aired_at: episode.air_date ? new Date(episode.air_date) : null,
                             images,
                             season: season.season_number,
                             id: episode.id.toString(),

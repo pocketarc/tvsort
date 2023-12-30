@@ -37,10 +37,6 @@ export const getShowDetails = async (matrixId: string, showId: string): Promise<
         async () => {
             console.log("Getting show details for", showId);
 
-            if (!process.env["TMDB_API_ACCESS_TOKEN"]) {
-                throw new Error("TMDB_API_ACCESS_TOKEN is not set.");
-            }
-
             const knex = getKnex();
             const result = await getShowRecord(knex, showId);
 
