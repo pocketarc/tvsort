@@ -4,13 +4,14 @@ import type { EpisodeModel, ShowModel } from "@/utils/types";
 import { getWikipediaData } from "@/utils/getWikipediaData";
 
 const main = async () => {
-    const imdbId = "tt1248736";
-    const showName = "The Office";
-    const season = 5;
-    const number = 13;
+    const imdbId = "tt0582423";
+    const showWikidataId = "Q209282";
+    const showName = "Frasier";
+    const season = 1;
+    const number = 5;
 
     const summaries = await getImdbData(imdbId);
-    const wikipedia = await getWikipediaData(imdbId, showName, season, number);
+    const wikipedia = await getWikipediaData(imdbId, showWikidataId, season, number);
 
     console.log("Wikipedia data", wikipedia);
     console.log("IMDB data", summaries);
@@ -21,6 +22,7 @@ const main = async () => {
         synced_at: null,
         episode_count: null,
         title: showName,
+        wikidata_id: showWikidataId,
         image: null,
     };
 

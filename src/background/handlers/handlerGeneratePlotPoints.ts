@@ -40,7 +40,7 @@ export default async function handlerGeneratePlotPoints(_boss: PgBoss, knex: Kne
     }
 
     if (episode.wikipedia_url === null) {
-        const wikipedia = await getWikipediaData(job.data.imdbId, show.title, episode.season, episode.number);
+        const wikipedia = await getWikipediaData(job.data.imdbId, show.wikidata_id, episode.season, episode.number);
 
         await knex<EpisodeModel>("episodes")
             .update({

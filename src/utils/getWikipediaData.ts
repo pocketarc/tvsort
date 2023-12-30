@@ -31,26 +31,41 @@ export async function getWikipediaUrlFromImdbId(imdbId: string): Promise<string 
     }
 }
 
-export async function getWikipediaSeasonUrlFromShow(showName: string, seasonNumber: number): Promise<string | null> {
-    const showNameWithUnderscores = showName.replace(" ", "_");
-    const seasonName = `season_${seasonNumber}`;
-    const url = `https://en.wikipedia.org/wiki/${showNameWithUnderscores}_(${seasonName})`;
+export async function getWikipediaSeasonUrlFromWikidataId(wikidataId: string | null, seasonNumber: number): Promise<string | null> {
+    const endpointUrl = "https://query.wikidata.org/sparql";
+    const sparqlQuery = ` SELECT ?wppage WHERE {
+     wd:${wikidataId} wdt:P527 ?season . # P527 (has part)
+     ?season wdt:P31 wd:Q3464665; # P31 (instance of) Q3464665 (television series season)
+           p:P179 [pq:P1545 "${seasonNumber}"] . # P179 (part of the series) P1545 (series ordinal)
+         ?wppage schema:about ?season .                                               
+  FILTER(contains(str(?wppage),'//en.wikipedia'))                    
+   }`;
 
+    const fullUrl = `${endpointUrl}?query=${encodeURIComponent(sparqlQuery)}`;
     const headers = {
+        Accept: "application/sparql-results+json",
         "User-Agent": "TVSort/1.0 (https://tvsort.com/about/; hello@pocketarc.com) tvsort/1.0",
     };
-    const response = await fetch(url, { headers });
-    const text = await response.text();
 
-    if (text.includes(`List of ${showName} episodes`)) {
-        return url;
-    } else {
+    const response = await fetch(fullUrl, { headers });
+
+    try {
+        const data = await response.json();
+        return data.results.bindings[0]?.wppage.value ?? null;
+    } catch (e) {
+        console.log("response", response);
+        console.error(e);
         return null;
     }
 }
 
-export async function getWikipediaData(imdbId: string, showName: string, seasonNumber: number, episodeNumber: number): Promise<WikipediaData> {
-    const wikipediaUrl = await getWikipediaUrlFromImdbId(imdbId);
+export async function getWikipediaData(
+    imdbId: string | null,
+    showWikidataId: string | null,
+    seasonNumber: number,
+    episodeNumber: number,
+): Promise<WikipediaData> {
+    const wikipediaUrl = imdbId ? await getWikipediaUrlFromImdbId(imdbId) : null;
 
     if (wikipediaUrl) {
         const response = await fetch(wikipediaUrl);
@@ -76,7 +91,11 @@ export async function getWikipediaData(imdbId: string, showName: string, seasonN
             text: plotPoints.join("\n"),
         };
     } else {
-        const wikipediaSeasonUrl = await getWikipediaSeasonUrlFromShow(showName, seasonNumber);
+        let wikipediaSeasonUrl: string | null = null;
+
+        if (showWikidataId) {
+            wikipediaSeasonUrl = await getWikipediaSeasonUrlFromWikidataId(showWikidataId, seasonNumber);
+        }
 
         if (wikipediaSeasonUrl) {
             const response = await fetch(wikipediaSeasonUrl);

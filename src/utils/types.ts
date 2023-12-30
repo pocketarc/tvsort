@@ -41,6 +41,7 @@ export type ShowModel = {
     episode_count: number | null;
     title: string;
     image: string | null;
+    wikidata_id: string | null;
 };
 
 export type EpisodeModel = {
@@ -98,3 +99,17 @@ export function isGeneratePlotPointsJob(data: PgBoss.Job<JobData>): data is PgBo
 export function isSyncShowJob(data: PgBoss.Job<JobData>): data is PgBoss.Job<SyncShowJobData> {
     return data.data.jobName === "sync-show";
 }
+
+// This is here because the library we rely on has an incorrect type definition.
+export type TmdbExternalIds = {
+    id: number;
+    imdb_id: string | null;
+    freebase_mid: string | null;
+    freebase_id: string | null;
+    tvdb_id: number | null;
+    tvrage_id: number | null;
+    wikidata_id: string | null;
+    facebook_id: string | null;
+    instagram_id: string | null;
+    twitter_id: string | null;
+};
