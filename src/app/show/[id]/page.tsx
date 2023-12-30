@@ -7,11 +7,12 @@ import getShowImage from "@/utils/getShowImage";
 import StartRankingButton from "@/components/StartRankingButton";
 import Image from "next/image";
 
-export default async function Page({ params: { id } }: { params: { id: string } }) {
+type Params = { id: string };
+
+export default async function Page({ params: { id } }: { params: Params }) {
     const knex = getKnex();
     const show = await getShowRecord(knex, id);
     const showImage = getShowImage(show.title, show.image);
-    const subtitle = `Which episode of ${show.title} is -actually- your favourite? 🤔`;
 
     return (
         <main className="flex flex-col bg-persian-700 min-h-full">
@@ -27,7 +28,9 @@ export default async function Page({ params: { id } }: { params: { id: string } 
                             <Image width={342} height={513} src={showImage} alt={show.title} className="w-full h-full object-cover" />
                         </div>
                         <div className="flex flex-col items-center justify-center">
-                            <h2 className="text-2xl sm:text-4xl">{subtitle}</h2>
+                            <h2 className="text-2xl sm:text-4xl">
+                                Which episode of {show.title} is <span className="text-nowrap">-actually-</span> your favourite? 🤔
+                            </h2>
                             <StartRankingButton id={id} />
                         </div>
                     </div>

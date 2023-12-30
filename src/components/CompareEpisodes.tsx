@@ -1,7 +1,6 @@
 import type { Episode as EpisodeType, Show } from "@/utils/types";
 import Episode from "@/components/Episode";
 import type { Comparison } from "@/utils/monkeySort";
-import Link from "next/link";
 import Footer from "@/components/Footer";
 
 type Props = {
@@ -12,7 +11,7 @@ type Props = {
     onClick: (a: EpisodeType, b: EpisodeType, value: Comparison) => unknown;
 };
 
-export default function CompareEpisodes({ show, episode1, episode2, comparisonsLeft, onClick }: Props) {
+export default function CompareEpisodes({ episode1, episode2, comparisonsLeft, onClick }: Props) {
     return (
         <>
             <div className="flex flex-col md:flex-row md:space-x-12 h-full w-full">
@@ -54,24 +53,6 @@ export default function CompareEpisodes({ show, episode1, episode2, comparisonsL
                         </div>
                         <div className="w-full mx-auto mb-2 sm:mb-6 text-center text-stone-500 text-xs sm:text-sm">
                             <div>Your progress is saved. You can stop and come back any time.</div>
-                            <div className="hidden">
-                                See something wrong / missing? Correct it on TMDB:{" "}
-                                <Link
-                                    target="_blank"
-                                    className="text-persian-700"
-                                    href={`https://www.themoviedb.org/tv/${show.id}/season/${episode1.season}/episode/${episode1.number}/edit`}
-                                >
-                                    {episode1.title}
-                                </Link>{" "}
-                                /{" "}
-                                <Link
-                                    target="_blank"
-                                    className="text-persian-700"
-                                    href={`https://www.themoviedb.org/tv/${show.id}/season/${episode2.season}/episode/${episode2.number}/edit`}
-                                >
-                                    {episode2.title}
-                                </Link>
-                            </div>
                         </div>
                         <Footer comparisonsLeft={comparisonsLeft} />
                     </div>

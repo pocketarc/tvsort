@@ -22,8 +22,22 @@ export default function Footer({ comparisonsLeft }: Props) {
         <div className="w-full mx-auto bg-persian-900 p-4">
             <div className="text-white text-center text-xs sm:text-sm">
                 {comparisonsLeft !== undefined && <>~{formattedDuration} left &middot; </>}
-                <Link href="https://pocketarc.com">Built with 🩵 by PocketArC</Link> &middot; <Link href="/about">About</Link> &middot;{" "}
-                <Link href="https://twitter.com/pocketarc">Twitter</Link>
+                Built with 🩵 by{" "}
+                <Link href="https://pocketarc.com" className="underline underline-offset-4">
+                    PocketArC
+                </Link>{" "}
+                with data from{" "}
+                <Link href="https://www.themoviedb.org" className="underline underline-offset-4">
+                    TMDB
+                </Link>{" "}
+                &middot;{" "}
+                <Link href="/about" className="underline underline-offset-4">
+                    About
+                </Link>{" "}
+                &middot;{" "}
+                <Link href="https://twitter.com/pocketarc" className="underline underline-offset-4">
+                    Twitter
+                </Link>
             </div>
         </div>
     );
