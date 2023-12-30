@@ -10,6 +10,8 @@ type Props = {
 };
 
 export default function Episode({ episode, standing }: Props) {
+    const firstTwoImages = episode.images.slice(0, 2);
+
     return (
         <div className="flex flex-col space-y-4">
             <div className="flex">
@@ -45,7 +47,7 @@ export default function Episode({ episode, standing }: Props) {
                 </ul>
             )}
             <ul className="grid grid-cols-2 gap-4">
-                {episode.images.map((image) => (
+                {firstTwoImages.map((image) => (
                     <div key={image}>
                         <Image src={image} className="rounded-md" width={300} height={225} alt="" />
                     </div>

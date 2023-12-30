@@ -11,12 +11,11 @@ type Props = {
 };
 
 export default function Results({ show, results }: Props) {
-    const firstPlace = results[0];
-    const secondPlace = results[1];
-    const lastPlace = results[results.length - 1];
-    const secondToLastPlace = results[results.length - 2];
+    const topEpisodes = results.slice(0, 4);
+    const bottomEpisodes = results.slice(-4).reverse();
+    const lastStanding = results.length;
 
-    if (!firstPlace || !secondPlace || !lastPlace || !secondToLastPlace) {
+    if (topEpisodes.length !== 4 || bottomEpisodes.length !== 4 || !topEpisodes[0] || !bottomEpisodes[0]) {
         return (
             <p>
                 Results are missing. This is a bug. Please report it to <a href="https://twitter.com/pocketarc">PocketArC on Twitter</a>.
@@ -25,17 +24,16 @@ export default function Results({ show, results }: Props) {
     }
 
     const shareResults = async () => {
+        const text = `Check out my ranked list of ${show.title} episodes`;
+
         const shareData: ShareData = {
             title: `Check out my ranked list of ${show.title} episodes`,
-            text: `Check out my ranked list of ${show.title} episodes`,
+            text: text,
             url: window.location.href,
         };
 
         const twitterSearchParams = new URLSearchParams();
-        twitterSearchParams.set(
-            "text",
-            `My favourite episodes of ${show.title} are ${firstPlace.title} and ${secondPlace.title}. I also really hated ${lastPlace.title}.`,
-        );
+        twitterSearchParams.set("text", text);
         twitterSearchParams.set("url", window.location.href);
         const twitterUrl = `https://twitter.com/intent/tweet?${twitterSearchParams.toString()}`;
 
@@ -60,13 +58,12 @@ export default function Results({ show, results }: Props) {
                         <span>🥁🥁🥁</span>
                     </h2>
                     <div className="px-4">
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            <div className="sm:w-1/2 bg-stone-100 rounded-md p-8">
-                                <Episode standing={1} episode={firstPlace} />
-                            </div>
-                            <div className="sm:w-1/2 bg-stone-100 rounded-md p-8">
-                                <Episode standing={2} episode={secondPlace} />
-                            </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {topEpisodes.map((episode, index) => (
+                                <div key={episode.id} className="bg-stone-100 rounded-md p-8">
+                                    <Episode standing={index + 1} episode={episode} />
+                                </div>
+                            ))}
                         </div>
                     </div>
                     <h2 className="text-7xl py-48 flex flex-col justify-center font-title font-bold text-center text-stone-800">
@@ -75,13 +72,12 @@ export default function Results({ show, results }: Props) {
                         <span>🤬🤬🤬</span>
                     </h2>
                     <div className="px-4">
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            <div className="sm:w-1/2 bg-stone-100 rounded-md p-8">
-                                <Episode episode={lastPlace} />
-                            </div>
-                            <div className="sm:w-1/2 bg-stone-100 rounded-md p-8">
-                                <Episode episode={secondToLastPlace} />
-                            </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {bottomEpisodes.map((episode, index) => (
+                                <div key={episode.id} className="bg-stone-100 rounded-md p-8">
+                                    <Episode standing={lastStanding - index} episode={episode} />
+                                </div>
+                            ))}
                         </div>
                     </div>
 
@@ -89,8 +85,8 @@ export default function Results({ show, results }: Props) {
                         <button onClick={shareResults} className="w-full my-32 bg-persian-700 rounded-md p-8 text-white">
                             <span className="block text-3xl sm:text-7xl leading-tight font-title text-shadow shadow-persian-950">Share your results</span>
                             <span>
-                                Tell everyone how much you love <span className="font-bold">{firstPlace.title}</span>. <br className="hidden sm:block" />
-                                Or how much you hate <span className="font-bold">{lastPlace.title}</span>.
+                                Tell everyone how much you love <span className="font-bold">{topEpisodes[0].title}</span>. <br className="hidden sm:block" />
+                                Or how much you hate <span className="font-bold">{bottomEpisodes[0].title}</span>.
                             </span>
                         </button>
 
