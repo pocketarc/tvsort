@@ -76,6 +76,7 @@ export const getShowState = async (matrixId: string, showId: string): Promise<Ge
             const jobId = await boss.send("default", jobData, {
                 // Make this job take precedence over generate-plot-points jobs.
                 priority: 2,
+                singletonKey: `${jobData.jobName}-${jobData.tmdbId}`,
             });
 
             console.log(`Sent sync-show job ${jobId}`);

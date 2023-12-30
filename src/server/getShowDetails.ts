@@ -70,6 +70,7 @@ export const getShowDetails = async (matrixId: string, showId: string): Promise<
                                     retryLimit: 3,
                                     retryBackoff: true,
                                     expireInHours: 24,
+                                    singletonKey: `${jobData.jobName}-${jobData.showId}-${jobData.episodeId}`,
                                 });
                             });
                         }
