@@ -32,7 +32,7 @@ export async function GET() {
 
     for (const show of shows) {
         sitemap.push({
-            url: `${baseUrl}/shows/${show.tmdb_id}`,
+            url: `${baseUrl}/show/${show.tmdb_id}`,
             lastModified: show.synced_at ?? new Date(),
             changeFrequency: "monthly",
             priority: 0.5,
