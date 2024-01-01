@@ -59,44 +59,6 @@ export class ComparisonMatrix<T extends SortableObject> {
         return Math.ceil(keysMissing.length / 2);
     }
 
-    public getRandomMissingComparison(): [T, T] | undefined {
-        const allMissingComparisons = new Map<string, [T, T]>();
-        const allKeys = this.items.map((item) => item.id);
-
-        for (const key of allKeys) {
-            const subItems = this.matrix[key];
-            if (subItems) {
-                const keysCompared = Object.keys(subItems);
-
-                for (const otherKey of allKeys) {
-                    if (!keysCompared.includes(otherKey)) {
-                        const keyAB = `${key}-${otherKey}`;
-                        const keyBA = `${otherKey}-${key}`;
-
-                        const existing = allMissingComparisons.get(keyAB) || allMissingComparisons.get(keyBA);
-
-                        if (!existing) {
-                            allMissingComparisons.set(keyAB, [
-                                this.items.find((item) => item.id == key) as T,
-                                this.items.find((item) => item.id == otherKey) as T,
-                            ]);
-                        }
-                    }
-                }
-            }
-        }
-
-        const comparisonKeys = Array.from(allMissingComparisons.keys());
-        if (comparisonKeys.length) {
-            const randomKey = comparisonKeys[Math.floor(Math.random() * comparisonKeys.length)];
-            if (randomKey) {
-                return allMissingComparisons.get(randomKey);
-            }
-        }
-
-        return undefined;
-    }
-
     protected opposite(value: Comparison) {
         return value == "=" ? "=" : value == "<" ? ">" : "<";
     }
@@ -196,11 +158,6 @@ export class ComparisonMatrix<T extends SortableObject> {
 export function monkeySort<T extends SortableObject>(matrix: ComparisonMatrix<T>, failOnUnknown: boolean = true) {
     // Clone the array, so we don't mutate the original.
     const array = [...matrix.items];
-
-    if (matrix.getComparisonsLeft() > 0) {
-        const [a, b] = matrix.getRandomMissingComparison() as [T, T];
-        throw new NeedUserInput(a, b);
-    }
 
     const part = (low: number, high: number) => {
         let i = low;
