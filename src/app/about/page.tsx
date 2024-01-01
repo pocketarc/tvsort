@@ -12,6 +12,18 @@ export default function Page() {
                 <div className="flex-grow bg-white p-8 sm:p-16">
                     <div className="prose max-w-3xl mx-auto">
                         <h2 className="text-3xl font-title text-stone-900">About</h2>
+
+                        <div className="bg-white border-l-4 sm:border-l-8 border-persian-700 px-4 py-2">
+                            <p className="m-0">
+                                <span className="font-bold">Update:</span> I wrote{" "}
+                                <Link href="https://pocketarc.com/posts/tv-sort-engineering-the-ultimate-tv-episode-ranking-system">
+                                    a blog post about the process of building TV Sort
+                                </Link>
+                                . It goes into a lot more detail about the technical details of the project, as well as the design decisions I made. It also
+                                includes some of the challenges I faced, and how I solved them. I highly recommend you check it out.
+                            </p>
+                        </div>
+
                         <p>
                             TV Sort is a tool to help you find your favourite episode of a TV show. It uses a human-driven{" "}
                             <Link href="https://en.wikipedia.org/wiki/Sorting_algorithm">sorting algorithm</Link> to compare episodes against each other and
