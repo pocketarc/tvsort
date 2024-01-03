@@ -6,13 +6,15 @@ import Footer from "@/components/Footer";
 type Props = {
     episodeCount: number | null | undefined;
     episodesSynced: number;
+    title?: string | undefined;
+    subtitle?: string | undefined;
 };
 
-export default function ShowLoader(_props: Props) {
+export default function ShowLoader({ title, subtitle }: Props) {
     return (
         <main className="flex flex-col min-h-full">
             <div className="flex-grow flex flex-col">
-                <Header />
+                <Header title={title} subtitle={subtitle} />
                 <div className="flex-grow flex flex-col justify-center max-w-3xl mx-auto">
                     <LoadingMessage bg="light" className="-mt-8">
                         Loading the show&apos;s details.

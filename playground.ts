@@ -20,7 +20,6 @@ const main = async () => {
         tmdb_id: "123",
         first_aired_at: null,
         synced_at: null,
-        episode_count: null,
         title: showName,
         wikidata_id: showWikidataId,
         image: null,

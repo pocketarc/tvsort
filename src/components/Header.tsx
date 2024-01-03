@@ -4,8 +4,8 @@ import clsx from "clsx";
 type Props = {
     showTitleOnMobile?: boolean;
     showSubtitle?: boolean;
-    title?: string;
-    subtitle?: string;
+    title?: string | undefined;
+    subtitle?: string | undefined;
 };
 
 export default function Header({ title, subtitle, showSubtitle, showTitleOnMobile }: Props) {

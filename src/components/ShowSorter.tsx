@@ -1,7 +1,7 @@
 "use client";
 
 import type { Episode, Show } from "@/utils/types";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import CompareEpisodes from "@/components/CompareEpisodes";
 import { type Comparison, ComparisonMatrix, monkeySort, NeedUserInput } from "@/utils/monkeySort";
 import Results from "@/components/Results";
@@ -19,7 +19,7 @@ type Props = {
 
 export default function ShowSorter({ show, matrixId, isComplete, matrix, explicitCount, episodes }: Props) {
     const comparisonMatrix = useMemo(() => {
-        const matrixFromStorage = typeof window !== "undefined" ? localStorage.getItem(`matrix-${matrixId}`) : null;
+        const matrixFromStorage = typeof localStorage !== "undefined" ? localStorage.getItem(`matrix-${matrixId}`) : null;
 
         if (matrixFromStorage) {
             return new ComparisonMatrix(episodes, JSON.parse(matrixFromStorage), explicitCount);
@@ -52,7 +52,11 @@ export default function ShowSorter({ show, matrixId, isComplete, matrix, explici
         [isComplete, matrixId],
     );
 
-    useEffect(() => {
+    // Run the quicksort algorithm on the matrix.
+    // This is a memoized function, so it will only run when the matrix changes.
+    // Instead of using a useEffect, we use a useMemo, because we want to run the function
+    // on the server side as well, which enables us to pre-render the results.
+    void useMemo(async () => {
         tryQuickSort(comparisonMatrix);
     }, [tryQuickSort, comparisonMatrix]);
 

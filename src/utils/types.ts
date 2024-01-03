@@ -1,5 +1,6 @@
 import type { Comparison } from "@/utils/monkeySort";
 import PgBoss from "pg-boss";
+import type { GetShowDetailsResponse } from "@/utils/getShowDetails";
 
 export type ShowSummary = {
     id: string;
@@ -38,7 +39,6 @@ export type ShowModel = {
     tmdb_id: string;
     first_aired_at: Date | null;
     synced_at: Date | null;
-    episode_count: number | null;
     title: string;
     image: string | null;
     wikidata_id: string | null;
@@ -113,3 +113,26 @@ export type TmdbExternalIds = {
     instagram_id: string | null;
     twitter_id: string | null;
 };
+
+export interface BaseShowState {
+    show: ShowSummary;
+    synced: boolean;
+    episodeCount: number | null;
+    episodesSynced: number;
+    details?: undefined | GetShowDetailsResponse;
+}
+
+export interface ShowStateWithoutMatrix extends BaseShowState {
+    show: ShowSummary;
+    synced: boolean;
+    episodeCount: number | null;
+    episodesSynced: number;
+}
+
+export interface ShowStateWithMatrix extends BaseShowState {
+    synced: true;
+    episodeCount: number;
+    details: GetShowDetailsResponse;
+}
+
+export type GetShowStateResponse = ShowStateWithoutMatrix | ShowStateWithMatrix;

@@ -39,6 +39,16 @@ export default function Page() {
                             If you have any questions, comments, or feedback, please <Link href="https://twitter.com/pocketarc">tweet at me</Link> or{" "}
                             <Link href="mailto:hello@pocketarc.com">send me an email</Link>.
                         </p>
+
+                        <h2 className="text-3xl font-title text-stone-900">Attribution</h2>
+                        <p>
+                            TV Sort uses the TMDB API but is not endorsed or certified by TMDB. I use the TMDB API to search for TV shows and get the episode
+                            lists for those shows. I also use the TMDB API to get the poster images for each episode, as well as links to IMDB.
+                        </p>
+                        <p>
+                            <Image src={tmdb} width={143} height={12} alt="TMDB logo" />
+                        </p>
+
                         <h2 className="text-3xl font-title text-stone-900">Technical Details</h2>
                         <p>
                             TV Sort is open source and available on <a href="https://github.com/pocketarc/tvsort">GitHub</a>. It&apos;s built with{" "}
@@ -59,14 +69,6 @@ export default function Page() {
                             Choices are also sent to the server, anonymously, so that I can build a database of episode rankings. This will allow us to build a
                             list of the best episodes of a show, as ranked by all users, without the usual 1/10 or 5/5 star ratings that are typically used and
                             mean different things to different people.
-                        </p>
-                        <h2 className="text-3xl font-title text-stone-900">Attribution</h2>
-                        <p>
-                            TV Sort uses the TMDB API but is not endorsed or certified by TMDB. I use the TMDB API to search for TV shows and get the episode
-                            lists for those shows. I also use the TMDB API to get the poster images for each episode, as well as links to IMDB.
-                        </p>
-                        <p>
-                            <Image src={tmdb} width={143} height={12} alt="TMDB logo" />
                         </p>
                     </div>
                 </div>

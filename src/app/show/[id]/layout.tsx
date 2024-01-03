@@ -1,6 +1,7 @@
 import React from "react";
 import type { Metadata, Viewport } from "next";
-import { getShowMetadata } from "@/utils/getShowMetadata";
+import { getShowStateWithoutMatrix } from "@/utils/getShowStateWithoutMatrix";
+import getKnex from "@/utils/getKnex";
 
 export const viewport: Viewport = {
     themeColor: "#d90429",
@@ -11,7 +12,8 @@ export const viewport: Viewport = {
 type Params = { id: string };
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
-    const show = await getShowMetadata(params.id);
+    const knex = getKnex();
+    const { show } = await getShowStateWithoutMatrix(knex, params.id);
 
     const title = `${show.title} - TV Sort`;
     const description = `Which episode of ${show.title} is your favourite?`;

@@ -49,7 +49,7 @@ export default function Episode({ episode, standing }: Props) {
             <ul className="grid grid-cols-2 gap-4">
                 {firstTwoImages.map((image) => (
                     <div key={image}>
-                        <Image src={image} className="rounded-md" width={300} height={225} alt="" />
+                        <Image src={image} className="rounded-md" width={300} height={169} alt="" />
                     </div>
                 ))}
             </ul>

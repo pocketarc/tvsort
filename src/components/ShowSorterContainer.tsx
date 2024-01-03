@@ -4,19 +4,22 @@ import useShow from "@/hooks/useShow";
 import ShowLoader from "@/components/ShowLoader";
 import Header from "@/components/Header";
 import ShowSorter from "@/components/ShowSorter";
+import type { GetShowStateResponse } from "@/utils/types";
 
 type Props = {
-    id: string;
+    initialState: GetShowStateResponse;
     matrixId: string;
 };
 
-export default function ShowSorterContainer({ id, matrixId }: Props) {
-    const { show, episodesSynced, episodeCount, synced, details } = useShow(matrixId, id);
+export default function ShowSorterContainer({ initialState, matrixId }: Props) {
+    const { show, episodesSynced, episodeCount, synced, details } = useShow(matrixId, initialState);
     const isLoading = !synced || !details || !show;
 
     return (
         <>
-            {isLoading && <ShowLoader episodeCount={episodeCount} episodesSynced={episodesSynced} />}
+            {isLoading && (
+                <ShowLoader title={show?.title} subtitle="Which of these episodes is better?" episodeCount={episodeCount} episodesSynced={episodesSynced} />
+            )}
             {!isLoading && details && show && (
                 <div className="h-full flex flex-col">
                     <Header showTitleOnMobile={false} title={show.title} subtitle="Which of these episodes is better?" />

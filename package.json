@@ -29,11 +29,12 @@
         "pg-boss": "^9.0.3",
         "react": "^18",
         "react-dom": "^18",
+        "sharp": "^0.33.1",
+        "shuffle-seed": "^1.1.6",
         "tmdb-ts": "^1.5.1",
         "typeid-js": "^0.3.0",
         "zod": "^3.22.4",
-        "zod-to-json-schema": "^3.22.2",
-        "sharp": "^0.33.1"
+        "zod-to-json-schema": "^3.22.2"
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.7",
