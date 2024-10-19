@@ -2,7 +2,6 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 /** @type {import("next").NextConfig} */
 const nextConfig = {
-    output: "standalone",
     reactStrictMode: false,
     experimental: {
         serverComponentsExternalPackages: ["knex"],
@@ -18,7 +17,7 @@ const nextConfig = {
             },
         ],
     },
-}
+};
 
 let exports = nextConfig;
 
