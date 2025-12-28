@@ -33,8 +33,8 @@ services:
       - DB_PASSWORD=tvsort
       - DB_DATABASE=tvsort
       - TMDB_API_ACCESS_TOKEN=${TMDB_API_ACCESS_TOKEN}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - OPENAI_ORGANIZATION_ID=${OPENAI_ORGANIZATION_ID}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENROUTER_MODEL=${OPENROUTER_MODEL:-google/gemini-3-flash-preview}
       - BASE_URL=http://tvsort.orb.local
       - NEXT_TELEMETRY_DISABLED=1
     labels:
@@ -67,8 +67,8 @@ services:
       - DB_PASSWORD=tvsort
       - DB_DATABASE=tvsort
       - TMDB_API_ACCESS_TOKEN=${TMDB_API_ACCESS_TOKEN}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - OPENAI_ORGANIZATION_ID=${OPENAI_ORGANIZATION_ID}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENROUTER_MODEL=${OPENROUTER_MODEL:-google/gemini-3-flash-preview}
       - BASE_URL=http://tvsort.orb.local
     command: bun run jobs:docker
 

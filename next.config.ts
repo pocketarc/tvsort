@@ -24,6 +24,12 @@ const nextConfig: NextConfig = {
             },
         ],
     },
+    experimental: {
+        serverActions: {
+            // Disable server actions; they are a security risk that isn't worth it.
+            allowedOrigins: [],
+        },
+    },
 };
 
 export default sentryDsn

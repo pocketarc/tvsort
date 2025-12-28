@@ -12,9 +12,11 @@
         "jobs-prod": "NODE_ENV=production bun src/background/index.ts",
         "lint": "biome check --write .",
         "dev:docker": "bun install && bun next dev",
-        "jobs:docker": "bun --watch src/background/index.ts"
+        "jobs:docker": "bun --watch src/background/index.ts",
+        "process-episode": "bun src/background/processEpisodeCli.ts"
     },
     "dependencies": {
+        "@openrouter/sdk": "^0.3.10",
         "@sentry/nextjs": "^10.32.1",
         "@tailwindcss/forms": "^0.5.11",
         "@tailwindcss/postcss": "^4.1.18",
@@ -28,7 +30,6 @@
         "lucide-react": "^0.303.0",
         "next": "^16.1.1",
         "node-html-parser": "^6.1.12",
-        "openai": "^4",
         "pg": "^8.11.3",
         "pg-boss": "^9.0.3",
         "react": "^18",

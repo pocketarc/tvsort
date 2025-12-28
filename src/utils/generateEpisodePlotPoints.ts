@@ -17,7 +17,6 @@ export default async function generateEpisodePlotPoints(
     );
 
     const zodSchema = z.object({
-        type: z.literal("object"),
         plot_points: z.array(z.string()),
     });
 
@@ -32,7 +31,7 @@ export default async function generateEpisodePlotPoints(
     const uniqueSummaries = [...new Set(summaries)];
 
     const summary = uniqueSummaries.join("\n").trim();
-    const prompt = `Generate a short list of all the different plot points mentioned in the given episode summaries of the show "${show.title}". Use very short sentences.`;
+    const prompt = `Generate a short list of all the different plot points mentioned in the given episode summaries of the show "${show.title}". Use very short sentences. The goal of this list is to jog someone's memory of this episode. Therefore, focus on the most unique and memorable plot points - names, places, and events that stand out.`;
 
     try {
         const allPoints = await generateJson(zodSchema, prompt, [
