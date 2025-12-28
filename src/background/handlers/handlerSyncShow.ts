@@ -3,6 +3,8 @@ import type { Job, PgBoss } from "pg-boss";
 import { TMDB } from "tmdb-ts";
 import fetchAndInsertEpisode from "@/utils/fetchAndInsertEpisode";
 import getShowRecord from "@/utils/getShowRecord";
+import insertPlaceholderEpisode, { PLACEHOLDER_PREFIX } from "@/utils/insertPlaceholderEpisode";
+import { isTmdbNotFound } from "@/utils/isTmdbError";
 import type { EpisodeModel, GeneratePlotPointsJobData, ShowModel, SyncShowJobData } from "@/utils/types";
 
 // biome-ignore lint/complexity/useLiteralKeys: https://github.com/biomejs/biome/issues/463
@@ -28,6 +30,40 @@ export default async function handlerSyncShow(boss: PgBoss, knex: Knex, job: Job
     // Insert the show record if it doesn't exist.
     await getShowRecord(knex, show.id.toString());
 
+    const placeholderEpisodes = await knex<EpisodeModel>("episodes")
+        .select()
+        .where("show_id", showId)
+        .andWhere("tmdb_id", "like", `${PLACEHOLDER_PREFIX}%`);
+
+    for (const placeholder of placeholderEpisodes) {
+        try {
+            const episode = await fetchAndInsertEpisode(knex, showId, placeholder.season, placeholder.number);
+            await knex<EpisodeModel>("episodes").where("tmdb_id", placeholder.tmdb_id).delete();
+
+            const jobData: GeneratePlotPointsJobData = {
+                jobName: "generate-plot-points",
+                showId: show.id.toString(),
+                episodeId: episode.tmdb_id,
+                imdbId: episode.imdb_id,
+            };
+
+            await boss.send("default", jobData, {
+                retryLimit: 3,
+                retryBackoff: true,
+                expireInSeconds: 23 * 60 * 60,
+                singletonKey: `${jobData.jobName}-${jobData.showId}-${jobData.episodeId}`,
+            });
+
+            console.log(`Replaced placeholder with real episode: ${episode.tmdb_id}`);
+        } catch (e) {
+            if (isTmdbNotFound(e)) {
+                console.log(`Episode still not in TMDB: S${placeholder.season}E${placeholder.number}`);
+            } else {
+                throw e;
+            }
+        }
+    }
+
     await Promise.all(
         show.seasons
             .filter((season) => {
@@ -43,21 +79,29 @@ export default async function handlerSyncShow(boss: PgBoss, knex: Knex, job: Job
                         .first();
 
                     if (!episodeRecord) {
-                        const episode = await fetchAndInsertEpisode(knex, showId, season.season_number, i);
+                        try {
+                            const episode = await fetchAndInsertEpisode(knex, showId, season.season_number, i);
 
-                        const jobData: GeneratePlotPointsJobData = {
-                            jobName: "generate-plot-points",
-                            showId: show.id.toString(),
-                            episodeId: episode.tmdb_id,
-                            imdbId: episode.imdb_id,
-                        };
+                            const jobData: GeneratePlotPointsJobData = {
+                                jobName: "generate-plot-points",
+                                showId: show.id.toString(),
+                                episodeId: episode.tmdb_id,
+                                imdbId: episode.imdb_id,
+                            };
 
-                        await boss.send("default", jobData, {
-                            retryLimit: 3,
-                            retryBackoff: true,
-                            expireInSeconds: 23 * 60 * 60,
-                            singletonKey: `${jobData.jobName}-${jobData.showId}-${jobData.episodeId}`,
-                        });
+                            await boss.send("default", jobData, {
+                                retryLimit: 3,
+                                retryBackoff: true,
+                                expireInSeconds: 23 * 60 * 60,
+                                singletonKey: `${jobData.jobName}-${jobData.showId}-${jobData.episodeId}`,
+                            });
+                        } catch (e) {
+                            if (isTmdbNotFound(e)) {
+                                await insertPlaceholderEpisode(knex, showId, season.season_number, i);
+                            } else {
+                                throw e;
+                            }
+                        }
                     }
                 }
             }),
