@@ -1,6 +1,5 @@
 import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
-import { withPlausibleProxy } from "next-plausible";
 
 // biome-ignore lint/complexity/useLiteralKeys: https://github.com/biomejs/biome/issues/463
 const sentryDsn = process.env["SENTRY_DSN"];
@@ -26,6 +25,16 @@ const nextConfig: NextConfig = {
             },
         ],
     },
+    rewrites: async () => [
+        {
+            source: "/js/script.js",
+            destination: "https://plausible.io/js/pa-DQzbOj4YxbGu6_20StSFT.js",
+        },
+        {
+            source: "/api/event",
+            destination: "https://plausible.io/api/event",
+        },
+    ],
     experimental: {
         serverActions: {
             // Disable server actions; they are a security risk that isn't worth it.
@@ -34,17 +43,16 @@ const nextConfig: NextConfig = {
     },
 };
 
-const configWithPlausible = withPlausibleProxy()(nextConfig);
-
 export default sentryDsn
-    ? withSentryConfig(configWithPlausible, {
+    ? withSentryConfig(nextConfig, {
           org: sentryOrg as string,
           project: sentryProject as string,
           silent: !ci,
           widenClientFileUpload: true,
+          telemetry: false,
           tunnelRoute: "/monitoring",
           sourcemaps: {
               deleteSourcemapsAfterUpload: true,
           },
       })
-    : configWithPlausible;
+    : nextConfig;

@@ -1,4 +1,8 @@
-import { usePlausible } from "next-plausible";
+declare global {
+    interface Window {
+        plausible?: (event: string, options?: { props?: Record<string, string | number> }) => void;
+    }
+}
 
 export type PlausibleEvents = {
     "show-search": { query: string; resultCount: number };
@@ -11,8 +15,10 @@ export type PlausibleEvents = {
     "sync-completed": { showId: string; episodeCount: number };
 };
 
-export function useAnalytics() {
-    return usePlausible<PlausibleEvents>();
+export function trackEvent<T extends keyof PlausibleEvents>(event: T, props: PlausibleEvents[T]) {
+    if (typeof window !== "undefined" && window.plausible) {
+        window.plausible(event, { props });
+    }
 }
 
 export async function trackServerEvent<T extends keyof PlausibleEvents>(

@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Bebas_Neue as BebasNeue, Inter } from "next/font/google";
 import Script from "next/script";
-import PlausibleProvider from "next-plausible";
 import type React from "react";
 import "./globals.css";
 
@@ -57,7 +56,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html lang="en" className="h-full">
             <body className={`${inter.variable} ${bebas.variable} h-full`}>
-                <PlausibleProvider domain="tvsort.com">{children}</PlausibleProvider>
+                <Script id="plausible-init" strategy="beforeInteractive">
+                    {`window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init({endpoint:"/api/event"})`}
+                </Script>
+                <Script src="/js/script.js" strategy="afterInteractive" data-domain="tvsort.com" />
+                {children}
             </body>
         </html>
     );

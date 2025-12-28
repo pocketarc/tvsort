@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import CompareEpisodes from "@/components/CompareEpisodes";
 import Results from "@/components/Results";
-import { useAnalytics } from "@/utils/analytics";
+import { trackEvent } from "@/utils/analytics";
 import { api } from "@/utils/apiClient";
 import { type Comparison, ComparisonMatrix, monkeySort, NeedUserInput } from "@/utils/monkeySort";
 import type { Episode, Show } from "@/utils/types";
@@ -18,7 +18,6 @@ type Props = {
 };
 
 export default function ShowSorter({ show, matrixId, isComplete, matrix, explicitCount, episodes }: Props) {
-    const plausible = useAnalytics();
     const hasTrackedStart = useRef(false);
     const hasTrackedComplete = useRef(false);
 
@@ -68,32 +67,26 @@ export default function ShowSorter({ show, matrixId, isComplete, matrix, explici
     useEffect(() => {
         if (episodesToMatch && !hasTrackedStart.current) {
             hasTrackedStart.current = true;
-            plausible("ranking-started", {
-                props: { showId: show.id, episodeCount: episodes.length },
-            });
+            trackEvent("ranking-started", { showId: show.id, episodeCount: episodes.length });
         }
-    }, [episodesToMatch, plausible, show.id, episodes.length]);
+    }, [episodesToMatch, show.id, episodes.length]);
 
     useEffect(() => {
         if (results && !hasTrackedComplete.current) {
             hasTrackedComplete.current = true;
-            plausible("ranking-completed", {
-                props: {
-                    showId: show.id,
-                    totalComparisons: comparisonMatrix.explicitCount,
-                },
+            trackEvent("ranking-completed", {
+                showId: show.id,
+                totalComparisons: comparisonMatrix.explicitCount,
             });
         }
-    }, [results, plausible, show.id, comparisonMatrix.explicitCount]);
+    }, [results, show.id, comparisonMatrix.explicitCount]);
 
     const onClick = (a: Episode, b: Episode, value: Comparison) => {
         comparisonMatrix.set(a, b, value);
 
-        plausible("comparison-made", {
-            props: {
-                showId: show.id,
-                comparisonNumber: comparisonMatrix.explicitCount,
-            },
+        trackEvent("comparison-made", {
+            showId: show.id,
+            comparisonNumber: comparisonMatrix.explicitCount,
         });
 
         // Save the matrix to localStorage, so we can resume later.
