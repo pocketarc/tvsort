@@ -1,29 +1,38 @@
+"use client";
+
 import * as Sentry from "@sentry/nextjs";
-import { useCallback } from "react";
-import { useFormState } from "react-dom";
-import { getShowState } from "@/server/getShowState";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { api } from "@/utils/apiClient";
 import type { GetShowStateResponse } from "@/utils/types";
 
 export default function useShow(
     matrixId: string,
     initialState: GetShowStateResponse,
 ) {
-    const [state, formAction] = useFormState(getShowState, initialState);
+    const [state, setState] = useState<GetShowStateResponse>(initialState);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const showId = state.show.id;
 
-    const refreshShowState = useCallback(async () => {
-        const fetchShowState = async () => {
-            const data: FormData = new FormData();
-            data.append("matrixId", matrixId);
-            data.append("showId", showId);
-            formAction(data);
-        };
-
+    const fetchShowState = useCallback(async () => {
         try {
+            const result = await api.getShowState(showId, matrixId);
+            setState(result);
+        } catch (error) {
+            Sentry.captureException(error);
+        }
+    }, [showId, matrixId]);
+
+    useEffect(() => {
+        const scheduleRefresh = () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+
             if (!state.synced) {
-                setTimeout(fetchShowState, 250);
+                timeoutRef.current = setTimeout(() => {
+                    void fetchShowState().then(scheduleRefresh);
+                }, 250);
             } else if (state.details) {
-                // Check if any episodes are still missing plot points:
                 const missingPlotPoints = state.details.show.seasons.flatMap(
                     (season) =>
                         season.episodes.filter(
@@ -32,17 +41,21 @@ export default function useShow(
                 );
 
                 if (missingPlotPoints.length > 0) {
-                    setTimeout(fetchShowState, 2000);
+                    timeoutRef.current = setTimeout(() => {
+                        void fetchShowState().then(scheduleRefresh);
+                    }, 2000);
                 }
             }
-        } catch (error) {
-            // We don't want to crash the app if we can't get the show state. Just try again in a bit.
-            Sentry.captureException(error);
-            setTimeout(fetchShowState, 2000);
-        }
-    }, [formAction, state, matrixId, showId]);
+        };
 
-    void refreshShowState();
+        scheduleRefresh();
+
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, [state, fetchShowState]);
 
     return {
         show: state.show,

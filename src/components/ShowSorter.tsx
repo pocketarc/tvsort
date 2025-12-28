@@ -3,8 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import CompareEpisodes from "@/components/CompareEpisodes";
 import Results from "@/components/Results";
-import markAsCompleted from "@/server/markAsCompleted";
-import { storeComparison } from "@/server/storeComparison";
+import { api } from "@/utils/apiClient";
 import {
     type Comparison,
     ComparisonMatrix,
@@ -58,7 +57,7 @@ export default function ShowSorter({
 
                 // Mark the matrix as complete only if it's not already complete.
                 if (!isComplete) {
-                    void markAsCompleted(matrixId, matrix.matrix);
+                    void api.markAsCompleted(matrixId, matrix.matrix);
                 }
 
                 setResults(result);
@@ -91,7 +90,7 @@ export default function ShowSorter({
         );
 
         // Save the comparison to the database, so we can use it for statistics.
-        void storeComparison(matrixId, a.id, b.id, value);
+        void api.storeComparison(matrixId, a.id, b.id, value);
 
         tryQuickSort(comparisonMatrix);
     };

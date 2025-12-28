@@ -1,19 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { useFormStatus } from "react-dom";
 import Intro from "@/components/Intro";
 import ListShows from "@/components/ListShows";
 import LoadingMessage from "@/components/LoadingMessage";
-import type { FindShowsResponse } from "@/server/findShows";
+import type { ShowSummary } from "@/utils/types";
 
 type Props = {
-    state: FindShowsResponse;
+    state: {
+        query: string | null;
+        shows: ShowSummary[];
+    };
+    isPending: boolean;
+    error: string | null;
 };
 
-export default function SelectShow({ state }: Props) {
+export default function SelectShow({ state, isPending, error }: Props) {
     const [query, setQuery] = useState<string>();
-    const { pending: showLoading, data } = useFormStatus();
+    const showLoading = isPending;
     const showResults = state.shows.length > 0 && !showLoading;
     const showIntro =
         (state.query === null || query !== state.query) &&
@@ -21,14 +25,14 @@ export default function SelectShow({ state }: Props) {
         !showLoading;
     const showNoResults =
         !showIntro && !showResults && !showLoading && query === state.query;
+    const showError = error && !showLoading;
 
     return (
         <div className="w-full">
             {
                 <div>
-                    <label htmlFor="email" className="sr-only">
-                        Select which TV show you want to watch{" "}
-                        {JSON.stringify(data)}
+                    <label htmlFor="show" className="sr-only">
+                        Select which TV show you want to watch
                     </label>
                     <div>
                         <input
@@ -45,6 +49,13 @@ export default function SelectShow({ state }: Props) {
                 </div>
             }
             {showIntro && <Intro />}
+            {showError && (
+                <div className="mt-16 flex-grow flex flex-col justify-center max-w-3xl mx-auto">
+                    <div className="text-red-300 text-center text-2xl text-shadow shadow-persian-900">
+                        {error}
+                    </div>
+                </div>
+            )}
             {showNoResults && (
                 <div className="mt-16 flex-grow flex flex-col justify-center max-w-3xl mx-auto">
                     <div className="text-white text-center text-2xl text-shadow shadow-persian-900">
