@@ -8,7 +8,7 @@ import { getShowStateInternal } from "@/utils/getShowStateInternal";
 import type { GetShowStateResponse } from "@/utils/types";
 
 const querySchema = z.object({
-    matrixId: z.string().min(1, "Query parameter 'matrixId' is required"),
+    matrixId: z.string().min(1, { error: "Query parameter 'matrixId' is required" }),
 });
 
 type RouteContext = {
@@ -53,9 +53,6 @@ export async function GET(
             },
             request,
         );
-        return NextResponse.json(
-            { error: "Internal server error" },
-            { status: 500 },
-        );
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

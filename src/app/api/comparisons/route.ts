@@ -2,10 +2,7 @@ import * as Sentry from "@sentry/nextjs";
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { trackServerEvent } from "@/utils/analytics";
-import type {
-    ApiErrorResponse,
-    StoreComparisonResponse,
-} from "@/utils/apiTypes";
+import type { ApiErrorResponse, StoreComparisonResponse } from "@/utils/apiTypes";
 import getKnex from "@/utils/getKnex";
 import type { ComparisonModel } from "@/utils/types";
 
@@ -16,9 +13,7 @@ const bodySchema = z.object({
     comparison: z.enum(["<", ">", "="]),
 });
 
-export async function POST(
-    request: NextRequest,
-): Promise<NextResponse<StoreComparisonResponse | ApiErrorResponse>> {
+export async function POST(request: NextRequest): Promise<NextResponse<StoreComparisonResponse | ApiErrorResponse>> {
     try {
         const body: unknown = await request.json();
         const parseResult = bodySchema.safeParse(body);
@@ -33,8 +28,7 @@ export async function POST(
             );
         }
 
-        const { matrixId, episodeAId, episodeBId, comparison } =
-            parseResult.data;
+        const { matrixId, episodeAId, episodeBId, comparison } = parseResult.data;
         const knex = getKnex();
 
         await knex<ComparisonModel>("comparisons")
@@ -59,9 +53,6 @@ export async function POST(
             },
             request,
         );
-        return NextResponse.json(
-            { error: "Internal server error" },
-            { status: 500 },
-        );
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

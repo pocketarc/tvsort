@@ -1,4 +1,4 @@
-import PgBoss from "pg-boss";
+import { PgBoss } from "pg-boss";
 
 declare namespace globalThis {
     let pgBoss: PgBoss | undefined;
@@ -15,10 +15,9 @@ const dbDatabase = process.env["DB_DATABASE"];
 
 export default async function getPgBoss() {
     if (!globalThis.pgBoss) {
-        globalThis.pgBoss = new PgBoss(
-            `postgres://${dbUsername}:${dbPassword}@${dbHost}/${dbDatabase}`,
-        );
+        globalThis.pgBoss = new PgBoss(`postgres://${dbUsername}:${dbPassword}@${dbHost}/${dbDatabase}`);
         globalThis.pgBoss = await globalThis.pgBoss.start();
+        await globalThis.pgBoss.createQueue("default");
     }
 
     return globalThis.pgBoss;

@@ -34,9 +34,7 @@ const nextConfig: NextConfig = {
     },
 };
 
-const configWithPlausible = withPlausibleProxy({
-    customDomain: 'https://tvsort.com',
-})(nextConfig);
+const configWithPlausible = withPlausibleProxy()(nextConfig);
 
 export default sentryDsn
     ? withSentryConfig(configWithPlausible, {

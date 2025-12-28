@@ -16,21 +16,12 @@ type Props = {
     defaultQuery?: string | undefined;
 };
 
-export default function SelectShow({
-    state,
-    isPending,
-    error,
-    defaultQuery,
-}: Props) {
+export default function SelectShow({ state, isPending, error, defaultQuery }: Props) {
     const [query, setQuery] = useState<string | undefined>(defaultQuery);
     const showLoading = isPending;
     const showResults = state.shows.length > 0 && !showLoading;
-    const showIntro =
-        (state.query === null || query !== state.query) &&
-        !showResults &&
-        !showLoading;
-    const showNoResults =
-        !showIntro && !showResults && !showLoading && query === state.query;
+    const showIntro = (state.query === null || query !== state.query) && !showResults && !showLoading;
+    const showNoResults = !showIntro && !showResults && !showLoading && query === state.query;
     const showError = error && !showLoading;
 
     return (
@@ -58,23 +49,19 @@ export default function SelectShow({
             {showIntro && <Intro />}
             {showError && (
                 <div className="mt-16 flex-grow flex flex-col justify-center max-w-3xl mx-auto">
-                    <div className="text-red-300 text-center text-2xl text-shadow shadow-persian-900">
-                        {error}
-                    </div>
+                    <div className="text-red-300 text-center text-2xl text-shadow shadow-persian-900">{error}</div>
                 </div>
             )}
             {showNoResults && (
                 <div className="mt-16 flex-grow flex flex-col justify-center max-w-3xl mx-auto">
                     <div className="text-white text-center text-2xl text-shadow shadow-persian-900">
-                        No shows match{" "}
-                        <span className="font-bold">{query}</span>.
+                        No shows match <span className="font-bold">{query}</span>.
                     </div>
                 </div>
             )}
             {showLoading && (
                 <LoadingMessage className="mt-16 flex-grow flex flex-col justify-center max-w-3xl mx-auto">
-                    Searching for shows matching{" "}
-                    <span className="font-bold">{query}</span>...
+                    Searching for shows matching <span className="font-bold">{query}</span>...
                 </LoadingMessage>
             )}
             {showResults && <ListShows shows={state.shows} />}

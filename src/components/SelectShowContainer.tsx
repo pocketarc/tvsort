@@ -15,8 +15,7 @@ type Props = {
 };
 
 export default function SelectShowContainer({ initialState }: Props) {
-    const { query, shows, isPending, error, searchShows } =
-        useSearchShows(initialState);
+    const { query, shows, isPending, error, searchShows } = useSearchShows(initialState);
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();

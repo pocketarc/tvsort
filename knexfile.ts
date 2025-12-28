@@ -19,9 +19,7 @@ const dbHost = process.env["DB_HOST"];
 const dbPort = process.env["DB_PORT"];
 
 if (!dbUsername || !dbPassword || !dbDatabase || !dbHost || !dbPort) {
-    throw new Error(
-        "DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_HOST, or DB_PORT is not defined.",
-    );
+    throw new Error("DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_HOST, or DB_PORT is not defined.");
 }
 
 pg.types.setTypeParser(builtins.INT8, (val) => parseInt(val, 10));

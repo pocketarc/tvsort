@@ -8,12 +8,7 @@ type Props = {
     subtitle?: string | undefined;
 };
 
-export default function Header({
-    title,
-    subtitle,
-    showSubtitle,
-    showTitleOnMobile,
-}: Props) {
+export default function Header({ title, subtitle, showSubtitle, showTitleOnMobile }: Props) {
     showTitleOnMobile = showTitleOnMobile ?? true;
     showSubtitle = showSubtitle ?? true;
     title = title ?? "TV Sort";
@@ -31,9 +26,7 @@ export default function Header({
                     📺 {title} 📺
                 </h1>
                 {showSubtitle && (
-                    <h2 className="-mt-1 text-white truncate sm:text-2xl text-shadow shadow-persian-900">
-                        {subtitle}
-                    </h2>
+                    <h2 className="-mt-1 text-white truncate sm:text-2xl text-shadow shadow-persian-900">{subtitle}</h2>
                 )}
             </Link>
         </div>

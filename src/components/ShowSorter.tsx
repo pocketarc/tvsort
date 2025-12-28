@@ -5,12 +5,7 @@ import CompareEpisodes from "@/components/CompareEpisodes";
 import Results from "@/components/Results";
 import { useAnalytics } from "@/utils/analytics";
 import { api } from "@/utils/apiClient";
-import {
-    type Comparison,
-    ComparisonMatrix,
-    monkeySort,
-    NeedUserInput,
-} from "@/utils/monkeySort";
+import { type Comparison, ComparisonMatrix, monkeySort, NeedUserInput } from "@/utils/monkeySort";
 import type { Episode, Show } from "@/utils/types";
 
 type Props = {
@@ -22,38 +17,23 @@ type Props = {
     matrix: Record<string, Record<string, Comparison>>;
 };
 
-export default function ShowSorter({
-    show,
-    matrixId,
-    isComplete,
-    matrix,
-    explicitCount,
-    episodes,
-}: Props) {
+export default function ShowSorter({ show, matrixId, isComplete, matrix, explicitCount, episodes }: Props) {
     const plausible = useAnalytics();
     const hasTrackedStart = useRef(false);
     const hasTrackedComplete = useRef(false);
 
     const comparisonMatrix = useMemo(() => {
         const matrixFromStorage =
-            typeof localStorage !== "undefined"
-                ? localStorage.getItem(`matrix-${matrixId}`)
-                : null;
+            typeof localStorage !== "undefined" ? localStorage.getItem(`matrix-${matrixId}`) : null;
 
         if (matrixFromStorage) {
-            return new ComparisonMatrix(
-                episodes,
-                JSON.parse(matrixFromStorage),
-                explicitCount,
-            );
+            return new ComparisonMatrix(episodes, JSON.parse(matrixFromStorage), explicitCount);
         } else {
             return new ComparisonMatrix(episodes, matrix, explicitCount);
         }
     }, [matrixId, episodes, matrix, explicitCount]);
     const [results, setResults] = useState<Episode[]>();
-    const [episodesToMatch, setEpisodesToMatch] = useState<
-        [Episode, Episode] | undefined
-    >();
+    const [episodesToMatch, setEpisodesToMatch] = useState<[Episode, Episode] | undefined>();
 
     const tryQuickSort = useCallback(
         (matrix: ComparisonMatrix<Episode>) => {
@@ -117,10 +97,7 @@ export default function ShowSorter({
         });
 
         // Save the matrix to localStorage, so we can resume later.
-        localStorage.setItem(
-            `matrix-${matrixId}`,
-            JSON.stringify(comparisonMatrix.matrix),
-        );
+        localStorage.setItem(`matrix-${matrixId}`, JSON.stringify(comparisonMatrix.matrix));
 
         // Save the comparison to the database, so we can use it for statistics.
         void api.storeComparison(matrixId, a.id, b.id, value);
@@ -128,11 +105,8 @@ export default function ShowSorter({
         tryQuickSort(comparisonMatrix);
     };
 
-    const estimatedComparisons = Math.ceil(
-        episodes.length * Math.log2(episodes.length),
-    );
-    const estimatedComparisonsLeft =
-        estimatedComparisons - comparisonMatrix.explicitCount;
+    const estimatedComparisons = Math.ceil(episodes.length * Math.log2(episodes.length));
+    const estimatedComparisonsLeft = estimatedComparisons - comparisonMatrix.explicitCount;
 
     return (
         <>

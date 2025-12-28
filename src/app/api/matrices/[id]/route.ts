@@ -2,18 +2,12 @@ import * as Sentry from "@sentry/nextjs";
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { trackServerEvent } from "@/utils/analytics";
-import type {
-    ApiErrorResponse,
-    MarkAsCompletedResponse,
-} from "@/utils/apiTypes";
+import type { ApiErrorResponse, MarkAsCompletedResponse } from "@/utils/apiTypes";
 import getKnex from "@/utils/getKnex";
 import type { ComparisonModel, MatrixModel } from "@/utils/types";
 
 const comparisonSchema = z.enum(["<", ">", "="]);
-const matrixSchema = z.record(
-    z.string(),
-    z.record(z.string(), comparisonSchema),
-);
+const matrixSchema = z.record(z.string(), z.record(z.string(), comparisonSchema));
 
 const bodySchema = z.object({
     matrix: matrixSchema,
@@ -47,16 +41,10 @@ export async function PATCH(
         const completedAt = new Date();
 
         await knex.transaction(async (trx) => {
-            await trx<ComparisonModel>("comparisons")
-                .delete()
-                .where("matrix_id", matrixId);
+            await trx<ComparisonModel>("comparisons").delete().where("matrix_id", matrixId);
 
-            for (const [episodeAId, episodeBComparisons] of Object.entries(
-                matrix,
-            )) {
-                for (const [episodeBId, comparison] of Object.entries(
-                    episodeBComparisons,
-                )) {
+            for (const [episodeAId, episodeBComparisons] of Object.entries(matrix)) {
+                for (const [episodeBId, comparison] of Object.entries(episodeBComparisons)) {
                     await trx<ComparisonModel>("comparisons").insert({
                         matrix_id: matrixId,
                         episode_a_id: episodeAId,
@@ -66,9 +54,7 @@ export async function PATCH(
                 }
             }
 
-            await trx<MatrixModel>("matrices")
-                .where("id", matrixId)
-                .update({ completed_at: completedAt });
+            await trx<MatrixModel>("matrices").where("id", matrixId).update({ completed_at: completedAt });
         });
 
         return NextResponse.json({
@@ -86,9 +72,6 @@ export async function PATCH(
             },
             request,
         );
-        return NextResponse.json(
-            { error: "Internal server error" },
-            { status: 500 },
-        );
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

@@ -5,9 +5,7 @@ type WikipediaData = {
     text: string | null;
 };
 
-export async function getWikipediaUrlFromImdbId(
-    imdbId: string,
-): Promise<string | null> {
+export async function getWikipediaUrlFromImdbId(imdbId: string): Promise<string | null> {
     const endpointUrl = "https://query.wikidata.org/sparql";
     const sparqlQuery = `SELECT ?wppage WHERE {                                                          
 ?subject wdt:P345 '${imdbId}' .                                                   
@@ -18,8 +16,7 @@ export async function getWikipediaUrlFromImdbId(
     const fullUrl = `${endpointUrl}?query=${encodeURIComponent(sparqlQuery)}`;
     const headers = {
         Accept: "application/sparql-results+json",
-        "User-Agent":
-            "TVSort/1.0 (https://tvsort.com/about/; hello@pocketarc.com) tvsort/1.0",
+        "User-Agent": "TVSort/1.0 (https://tvsort.com/about/; hello@pocketarc.com) tvsort/1.0",
     };
 
     const response = await fetch(fullUrl, { headers });
@@ -50,8 +47,7 @@ export async function getWikipediaSeasonUrlFromWikidataId(
     const fullUrl = `${endpointUrl}?query=${encodeURIComponent(sparqlQuery)}`;
     const headers = {
         Accept: "application/sparql-results+json",
-        "User-Agent":
-            "TVSort/1.0 (https://tvsort.com/about/; hello@pocketarc.com) tvsort/1.0",
+        "User-Agent": "TVSort/1.0 (https://tvsort.com/about/; hello@pocketarc.com) tvsort/1.0",
     };
 
     const response = await fetch(fullUrl, { headers });
@@ -72,9 +68,7 @@ export async function getWikipediaData(
     seasonNumber: number,
     episodeNumber: number,
 ): Promise<WikipediaData> {
-    const wikipediaUrl = imdbId
-        ? await getWikipediaUrlFromImdbId(imdbId)
-        : null;
+    const wikipediaUrl = imdbId ? await getWikipediaUrlFromImdbId(imdbId) : null;
 
     if (wikipediaUrl) {
         const response = await fetch(wikipediaUrl);
@@ -103,10 +97,7 @@ export async function getWikipediaData(
         let wikipediaSeasonUrl: string | null = null;
 
         if (showWikidataId) {
-            wikipediaSeasonUrl = await getWikipediaSeasonUrlFromWikidataId(
-                showWikidataId,
-                seasonNumber,
-            );
+            wikipediaSeasonUrl = await getWikipediaSeasonUrlFromWikidataId(showWikidataId, seasonNumber);
         }
 
         if (wikipediaSeasonUrl) {
@@ -114,28 +105,17 @@ export async function getWikipediaData(
             const text = await response.text();
             const root = parse(text);
 
-            for (const tr of root.querySelectorAll(
-                ".wikiepisodetable .vevent",
-            )) {
+            for (const tr of root.querySelectorAll(".wikiepisodetable .vevent")) {
                 const nextTr = tr.nextElementSibling;
 
                 if (!nextTr) {
-                    throw new Error(
-                        "No next tr? This is unexpected. Current tr: " +
-                            tr.toString(),
-                    );
+                    throw new Error(`No next tr? This is unexpected. Current tr: ${tr.toString()}`);
                 }
 
-                const detectedEpisodeNumber = tr
-                    .querySelector("td:nth-child(2)")
-                    ?.text.trim();
-                const episodeDescription = nextTr
-                    .querySelector("td")
-                    ?.text.trim();
+                const detectedEpisodeNumber = tr.querySelector("td:nth-child(2)")?.text.trim();
+                const episodeDescription = nextTr.querySelector("td")?.text.trim();
 
-                if (
-                    episodeNumber === parseInt(detectedEpisodeNumber ?? "", 10)
-                ) {
+                if (episodeNumber === parseInt(detectedEpisodeNumber ?? "", 10)) {
                     return {
                         url: wikipediaSeasonUrl,
                         text: episodeDescription ?? null,

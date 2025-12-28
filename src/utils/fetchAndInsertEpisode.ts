@@ -35,12 +35,8 @@ export default async function fetchAndInsertEpisode(
         ["external_ids", "images"] as const,
     );
 
-    const allEpisodeImages: Images & { stills?: Image[] } =
-        episode.images as Images & { stills?: Image[] };
-    const images =
-        allEpisodeImages.stills?.map(
-            (still) => `https://image.tmdb.org/t/p/w300/${still.file_path}`,
-        ) ?? [];
+    const allEpisodeImages: Images & { stills?: Image[] } = episode.images as Images & { stills?: Image[] };
+    const images = allEpisodeImages.stills?.map((still) => `https://image.tmdb.org/t/p/w300/${still.file_path}`) ?? [];
 
     const episodeData: Partial<EpisodeModel> = {
         tmdb_id: episode.id.toString(),
@@ -60,14 +56,9 @@ export default async function fetchAndInsertEpisode(
 
     console.log(`Inserting episode ${episode.id} into database...`);
 
-    await knex<EpisodeModel>("episodes")
-        .insert(episodeData)
-        .onConflict("tmdb_id")
-        .ignore();
+    await knex<EpisodeModel>("episodes").insert(episodeData).onConflict("tmdb_id").ignore();
 
-    const inserted = await knex<EpisodeModel>("episodes")
-        .where({ tmdb_id: episode.id.toString() })
-        .first();
+    const inserted = await knex<EpisodeModel>("episodes").where({ tmdb_id: episode.id.toString() }).first();
 
     if (!inserted) {
         throw new Error(`Failed to insert episode ${episode.id}`);

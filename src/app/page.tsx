@@ -10,9 +10,7 @@ type Props = {
 export default async function Page({ searchParams }: Props) {
     const { query } = await searchParams;
     const trimmedQuery = query?.trim();
-    const initialState = trimmedQuery
-        ? await searchShows(trimmedQuery)
-        : undefined;
+    const initialState = trimmedQuery ? await searchShows(trimmedQuery) : undefined;
 
     return (
         <main className="flex flex-col bg-persian-700 min-h-full">

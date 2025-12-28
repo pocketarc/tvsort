@@ -42,14 +42,9 @@ export const api = {
     /**
      * Get show state with matrix data
      */
-    getShowState: async (
-        showId: string,
-        matrixId: string,
-    ): Promise<GetShowStateResponse> => {
+    getShowState: async (showId: string, matrixId: string): Promise<GetShowStateResponse> => {
         const params = new URLSearchParams({ matrixId });
-        const response = await fetch(
-            `/api/shows/${showId}?${params.toString()}`,
-        );
+        const response = await fetch(`/api/shows/${showId}?${params.toString()}`);
         return handleResponse<GetShowStateResponse>(response);
     },
 

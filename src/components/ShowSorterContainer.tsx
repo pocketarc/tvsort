@@ -12,10 +12,7 @@ type Props = {
 };
 
 export default function ShowSorterContainer({ initialState, matrixId }: Props) {
-    const { show, episodesSynced, episodeCount, synced, details } = useShow(
-        matrixId,
-        initialState,
-    );
+    const { show, episodesSynced, episodeCount, synced, details } = useShow(matrixId, initialState);
     const isLoading = !synced || !details || !show;
 
     return (
@@ -41,9 +38,7 @@ export default function ShowSorterContainer({ initialState, matrixId }: Props) {
                         isComplete={details.isComplete}
                         matrix={details.matrix}
                         explicitCount={details.explicitCount}
-                        episodes={details.show.seasons.flatMap(
-                            (season) => season.episodes,
-                        )}
+                        episodes={details.show.seasons.flatMap((season) => season.episodes)}
                     />
                 </div>
             )}

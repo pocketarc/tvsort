@@ -9,12 +9,7 @@ type Props = {
     spin?: boolean;
 };
 
-export default function LoadingMessage({
-    className,
-    bg,
-    children,
-    spin,
-}: Props) {
+export default function LoadingMessage({ className, bg, children, spin }: Props) {
     spin = spin ?? true;
     bg = bg ?? "dark";
 
@@ -31,9 +26,7 @@ export default function LoadingMessage({
             <div
                 className={clsx(
                     "text-center text-2xl",
-                    bg === "light"
-                        ? "text-stone-400"
-                        : "text-white text-shadow shadow-persian-900",
+                    bg === "light" ? "text-stone-400" : "text-white text-shadow shadow-persian-900",
                 )}
             >
                 {children}

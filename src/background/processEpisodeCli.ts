@@ -5,14 +5,10 @@ import type { EpisodeModel } from "@/utils/types";
 
 const showId = process.argv[2];
 const season = process.argv[3] ? Number.parseInt(process.argv[3], 10) : null;
-const episodeNumber = process.argv[4]
-    ? Number.parseInt(process.argv[4], 10)
-    : null;
+const episodeNumber = process.argv[4] ? Number.parseInt(process.argv[4], 10) : null;
 
 if (!showId || !season || !episodeNumber) {
-    console.error(
-        "Usage: bun run process-episode <show_tmdb_id> <season> <episode_number>",
-    );
+    console.error("Usage: bun run process-episode <show_tmdb_id> <season> <episode_number>");
     process.exit(1);
 }
 
@@ -27,12 +23,7 @@ try {
     // If not, fetch from TMDB and insert
     if (!episode) {
         console.log("Episode not found in database, fetching from TMDB...");
-        episode = await fetchAndInsertEpisode(
-            knex,
-            showId,
-            season,
-            episodeNumber,
-        );
+        episode = await fetchAndInsertEpisode(knex, showId, season, episodeNumber);
     }
 
     // Process the episode

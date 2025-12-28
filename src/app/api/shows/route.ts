@@ -6,12 +6,10 @@ import type { ApiErrorResponse, SearchShowsResponse } from "@/utils/apiTypes";
 import { searchShows } from "@/utils/searchShows";
 
 const querySchema = z.object({
-    q: z.string().min(1, "Query parameter 'q' is required"),
+    q: z.string().min(1, { error: "Query parameter 'q' is required" }),
 });
 
-export async function GET(
-    request: NextRequest,
-): Promise<NextResponse<SearchShowsResponse | ApiErrorResponse>> {
+export async function GET(request: NextRequest): Promise<NextResponse<SearchShowsResponse | ApiErrorResponse>> {
     try {
         const { searchParams } = new URL(request.url);
         const parseResult = querySchema.safeParse({
@@ -43,9 +41,6 @@ export async function GET(
             },
             request,
         );
-        return NextResponse.json(
-            { error: "Internal server error" },
-            { status: 500 },
-        );
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

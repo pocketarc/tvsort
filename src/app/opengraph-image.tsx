@@ -11,10 +11,8 @@ export const contentType = "image/png";
 
 // Image generation
 export default async function Image() {
-    const bebasUrl =
-        "https://fonts.gstatic.com/s/bebasneue/v14/JTUSjIg69CK48gW7PXooxW0.woff";
-    const interUrl =
-        "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfMZs.woff";
+    const bebasUrl = "https://fonts.gstatic.com/s/bebasneue/v14/JTUSjIg69CK48gW7PXooxW0.woff";
+    const interUrl = "https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfMZs.woff";
     const bebas = fetch(new URL(bebasUrl)).then((res) => res.arrayBuffer());
     const inter = fetch(new URL(interUrl)).then((res) => res.arrayBuffer());
 

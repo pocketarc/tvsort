@@ -49,10 +49,7 @@ export function useSearchShows(initialState?: InitialState) {
                     Sentry.captureException(error);
                     setState((prev) => ({
                         ...prev,
-                        error:
-                            error instanceof ApiError
-                                ? error.message
-                                : "Failed to search shows",
+                        error: error instanceof ApiError ? error.message : "Failed to search shows",
                     }));
                 }
             });

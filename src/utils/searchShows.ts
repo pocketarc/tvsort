@@ -29,9 +29,7 @@ export async function searchShows(query: string): Promise<SearchShowsResult> {
     const shows = results.results.map((show) => ({
         id: show.id.toString(),
         title: show.name,
-        first_aired_at: show.first_air_date
-            ? parseDate(show.first_air_date, "yyyy-MM-dd", new Date())
-            : null,
+        first_aired_at: show.first_air_date ? parseDate(show.first_air_date, "yyyy-MM-dd", new Date()) : null,
         image: getShowImage(show.name, show.poster_path),
     }));
 

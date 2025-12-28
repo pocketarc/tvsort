@@ -14,11 +14,7 @@ export const viewport: Viewport = {
 
 type Params = { id: string };
 
-export async function generateMetadata({
-    params,
-}: {
-    params: Promise<Params>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
     const { id } = await params;
     const knex = getKnex();
     const { show } = await getShowStateWithoutMatrix(knex, id);

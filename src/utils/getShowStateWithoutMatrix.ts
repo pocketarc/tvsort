@@ -8,17 +8,12 @@ type QueryResult = Array<{
     synced: number;
 }>;
 
-export const getShowStateWithoutMatrix = async (
-    knex: Knex,
-    showId: string,
-): Promise<ShowStateWithoutMatrix> => {
+export const getShowStateWithoutMatrix = async (knex: Knex, showId: string): Promise<ShowStateWithoutMatrix> => {
     const result = await getShowRecord(knex, showId);
 
     const buffer = await knex<EpisodeModel>("episodes")
         .select<QueryResult>(
-            knex.raw(
-                "count(*) as total, sum(case when synced_at is null then 0 else 1 end) as synced",
-            ),
+            knex.raw("count(*) as total, sum(case when synced_at is null then 0 else 1 end) as synced"),
         )
         .where("show_id", showId);
 

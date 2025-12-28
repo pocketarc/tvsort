@@ -12,9 +12,7 @@ export default async function generateEpisodePlotPoints(
     show: ShowModel,
     episode: EpisodeModel,
 ): Promise<EpisodePlotPoints> {
-    console.log(
-        `Generating plot points for ${show.tmdb_id} (${show.title})...`,
-    );
+    console.log(`Generating plot points for ${show.tmdb_id} (${show.title})...`);
 
     const zodSchema = z.object({
         plot_points: z.array(z.string()),
@@ -41,9 +39,7 @@ export default async function generateEpisodePlotPoints(
             },
         ]);
 
-        console.log(
-            `Grabbed all points. Now grabbing the 3 most different points...`,
-        );
+        console.log(`Grabbed all points. Now grabbing the 3 most different points...`);
 
         let mainPoints = await generateJson(zodSchema, prompt, [
             {
@@ -56,15 +52,12 @@ export default async function generateEpisodePlotPoints(
             },
             {
                 role: "user",
-                content:
-                    "List the 3 most different points. Use much shorter sentences.",
+                content: "List the 3 most different points. Use much shorter sentences.",
             },
         ]);
 
         if (mainPoints.plot_points.join("").length > 275) {
-            console.log(
-                `The plot points are too long. Generating shorter points...`,
-            );
+            console.log(`The plot points are too long. Generating shorter points...`);
 
             mainPoints = await generateJson(zodSchema, prompt, [
                 {
@@ -77,8 +70,7 @@ export default async function generateEpisodePlotPoints(
                 },
                 {
                     role: "user",
-                    content:
-                        "List the 3 most different points. Use much shorter sentences.",
+                    content: "List the 3 most different points. Use much shorter sentences.",
                 },
                 {
                     role: "assistant",

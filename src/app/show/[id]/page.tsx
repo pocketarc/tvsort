@@ -36,9 +36,8 @@ export default async function Page({ params }: { params: Promise<Params> }) {
                         </div>
                         <div className="flex flex-col items-center justify-center">
                             <h2 className="text-2xl sm:text-4xl">
-                                Which episode of {show.title} is{" "}
-                                <span className="text-nowrap">-actually-</span>{" "}
-                                your favourite? 🤔
+                                Which episode of {show.title} is <span className="text-nowrap">-actually-</span> your
+                                favourite? 🤔
                             </h2>
                             <StartRankingButton id={id} />
                         </div>

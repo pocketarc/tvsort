@@ -26,19 +26,12 @@ export default function ListShows({ shows }: Props) {
                         });
                     }}
                 >
-                    <Image
-                        src={show.image}
-                        width={342}
-                        height={513}
-                        alt={show.title}
-                    />
+                    <Image src={show.image} width={342} height={513} alt={show.title} />
                     <h2 className="mt-4 truncate font-title text-persian-50 text-xl leading-snug shadow-persian-950 text-shadow">
                         {show.title}
                     </h2>
                     {show.first_aired_at && (
-                        <p className="text-xs text-persian-300">
-                            {format(show.first_aired_at, "yyyy")}
-                        </p>
+                        <p className="text-xs text-persian-300">{format(show.first_aired_at, "yyyy")}</p>
                     )}
                 </Link>
             ))}

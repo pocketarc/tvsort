@@ -1,34 +1,21 @@
 import type { Knex } from "knex";
-import type PgBoss from "pg-boss";
+import type { Job, PgBoss } from "pg-boss";
 import { TMDB } from "tmdb-ts";
 import fetchAndInsertEpisode from "@/utils/fetchAndInsertEpisode";
 import getShowRecord from "@/utils/getShowRecord";
-import type {
-    EpisodeModel,
-    GeneratePlotPointsJobData,
-    ShowModel,
-    SyncShowJobData,
-} from "@/utils/types";
+import type { EpisodeModel, GeneratePlotPointsJobData, ShowModel, SyncShowJobData } from "@/utils/types";
 
 // biome-ignore lint/complexity/useLiteralKeys: https://github.com/biomejs/biome/issues/463
 const tmdbApiToken = process.env["TMDB_API_ACCESS_TOKEN"];
 
-export default async function handlerSyncShow(
-    boss: PgBoss,
-    knex: Knex,
-    job: PgBoss.Job<SyncShowJobData>,
-) {
+export default async function handlerSyncShow(boss: PgBoss, knex: Knex, job: Job<SyncShowJobData>) {
     if (!tmdbApiToken) {
         throw new Error("TMDB_API_ACCESS_TOKEN is not set.");
     }
 
     const showId = job.data.tmdbId;
 
-    const result = await knex<ShowModel>("shows")
-        .select()
-        .where("tmdb_id", showId)
-        .whereNotNull("synced_at")
-        .first();
+    const result = await knex<ShowModel>("shows").select().where("tmdb_id", showId).whereNotNull("synced_at").first();
 
     if (result) {
         // If the show has already been synced, then we don't need to do anything.
@@ -56,12 +43,7 @@ export default async function handlerSyncShow(
                         .first();
 
                     if (!episodeRecord) {
-                        const episode = await fetchAndInsertEpisode(
-                            knex,
-                            showId,
-                            season.season_number,
-                            i,
-                        );
+                        const episode = await fetchAndInsertEpisode(knex, showId, season.season_number, i);
 
                         const jobData: GeneratePlotPointsJobData = {
                             jobName: "generate-plot-points",
@@ -73,7 +55,7 @@ export default async function handlerSyncShow(
                         await boss.send("default", jobData, {
                             retryLimit: 3,
                             retryBackoff: true,
-                            expireInHours: 24,
+                            expireInSeconds: 23 * 60 * 60,
                             singletonKey: `${jobData.jobName}-${jobData.showId}-${jobData.episodeId}`,
                         });
                     }

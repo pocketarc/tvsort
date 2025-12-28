@@ -11,12 +11,7 @@ type Props = {
     onClick: (a: EpisodeType, b: EpisodeType, value: Comparison) => unknown;
 };
 
-export default function CompareEpisodes({
-    episode1,
-    episode2,
-    comparisonsLeft,
-    onClick,
-}: Props) {
+export default function CompareEpisodes({ episode1, episode2, comparisonsLeft, onClick }: Props) {
     return (
         <div className="flex flex-col md:flex-row md:space-x-12 h-full w-full">
             <div className="flex flex-col flex-grow">
@@ -59,10 +54,7 @@ export default function CompareEpisodes({
                         </button>
                     </div>
                     <div className="w-full mx-auto mb-2 sm:mb-6 text-center text-stone-500 text-xs sm:text-sm">
-                        <div>
-                            Your progress is saved. You can stop and come back
-                            any time.
-                        </div>
+                        <div>Your progress is saved. You can stop and come back any time.</div>
                     </div>
                     <Footer comparisonsLeft={comparisonsLeft} />
                 </div>

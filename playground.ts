@@ -11,12 +11,7 @@ const main = async () => {
     const number = 5;
 
     const summaries = await getImdbData(imdbId);
-    const wikipedia = await getWikipediaData(
-        imdbId,
-        showWikidataId,
-        season,
-        number,
-    );
+    const wikipedia = await getWikipediaData(imdbId, showWikidataId, season, number);
 
     console.log("Wikipedia data", wikipedia);
     console.log("IMDB data", summaries);

@@ -43,6 +43,12 @@
     --animate-spin-slow: spin 5s linear infinite;
 }
 
+@layer base {
+    button, [role="button"] {
+        cursor: pointer;
+    }
+}
+
 /* Text shadow utilities */
 @utility text-shadow-sm {
     text-shadow: 1px 1px 0px var(--tw-shadow-color);

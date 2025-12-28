@@ -12,9 +12,7 @@ export async function up(knex: Knex): Promise<void> {
     // Update all shows with Wikidata IDs.
     for (const show of shows) {
         const data = await getTmdbShowData(show.tmdb_id);
-        await knex<ShowModel>("shows")
-            .where("tmdb_id", show.tmdb_id)
-            .update(data);
+        await knex<ShowModel>("shows").where("tmdb_id", show.tmdb_id).update(data);
     }
 
     await knex.schema.alterTable("episodes", (table) => {

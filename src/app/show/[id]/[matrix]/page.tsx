@@ -9,7 +9,5 @@ export default async function Page({ params }: { params: Promise<Params> }) {
     const knex = getKnex();
     const initialState = await getShowStateInternal(knex, id, matrixId);
 
-    return (
-        <ShowSorterContainer initialState={initialState} matrixId={matrixId} />
-    );
+    return <ShowSorterContainer initialState={initialState} matrixId={matrixId} />;
 }

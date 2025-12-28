@@ -1,14 +1,11 @@
 import * as Sentry from "@sentry/node";
-import type PgBoss from "pg-boss";
+import type { Job } from "pg-boss";
 import handlerGeneratePlotPoints from "@/background/handlers/handlerGeneratePlotPoints";
 import handlerSyncShow from "@/background/handlers/handlerSyncShow";
 import getKnex from "@/utils/getKnex";
 import getPgBoss from "@/utils/getPgBoss";
-import {
-    isGeneratePlotPointsJob,
-    isSyncShowJob,
-    type JobData,
-} from "@/utils/types";
+import { isGeneratePlotPointsJob, isSyncShowJob, type JobData } from "@/utils/types";
+import knexConfig from "../../knexfile";
 
 // biome-ignore lint/complexity/useLiteralKeys: https://github.com/biomejs/biome/issues/463
 const sentryDsn = process.env["SENTRY_DSN"];
@@ -28,6 +25,12 @@ async function main() {
     console.log("Starting background job processor...");
 
     const knex = getKnex();
+
+    // Run migrations before starting
+    console.log("Running database migrations...");
+    await knex.migrate.latest(knexConfig.migrations);
+    console.log("Migrations complete");
+
     const boss = await getPgBoss();
 
     console.log("Connected to database, listening for jobs");
@@ -35,16 +38,18 @@ async function main() {
     await boss.work(
         "default",
         {
-            teamSize: 5,
-            teamConcurrency: 5,
-            teamRefill: true,
-            newJobCheckInterval: 100,
-            newJobCheckIntervalSeconds: 1,
+            batchSize: 1,
+            pollingIntervalSeconds: 1,
         },
         handlerQueueJobs,
     );
 
-    async function handlerQueueJobs(job: PgBoss.Job<JobData>) {
+    async function handlerQueueJobs(jobs: Job<JobData>[]) {
+        const job = jobs[0];
+        if (!job) {
+            return;
+        }
+
         try {
             if (isSyncShowJob(job)) {
                 await handlerSyncShow(boss, knex, job);

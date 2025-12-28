@@ -5,10 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "@/utils/apiClient";
 import type { GetShowStateResponse } from "@/utils/types";
 
-export default function useShow(
-    matrixId: string,
-    initialState: GetShowStateResponse,
-) {
+export default function useShow(matrixId: string, initialState: GetShowStateResponse) {
     const [state, setState] = useState<GetShowStateResponse>(initialState);
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const showId = state.show.id;
@@ -33,11 +30,8 @@ export default function useShow(
                     void fetchShowState().then(scheduleRefresh);
                 }, 250);
             } else if (state.details) {
-                const missingPlotPoints = state.details.show.seasons.flatMap(
-                    (season) =>
-                        season.episodes.filter(
-                            (episode) => episode.plot_points.length === 0,
-                        ),
+                const missingPlotPoints = state.details.show.seasons.flatMap((season) =>
+                    season.episodes.filter((episode) => episode.plot_points.length === 0),
                 );
 
                 if (missingPlotPoints.length > 0) {
