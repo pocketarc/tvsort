@@ -36,6 +36,7 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OPENAI_ORGANIZATION_ID=${OPENAI_ORGANIZATION_ID}
       - BASE_URL=http://tvsort.orb.local
+      - NEXT_TELEMETRY_DISABLED=1
     labels:
       - dev.orbstack.domains=tvsort.orb.local
     command: bun run dev:docker

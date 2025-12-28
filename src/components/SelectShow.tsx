@@ -13,10 +13,16 @@ type Props = {
     };
     isPending: boolean;
     error: string | null;
+    defaultQuery?: string | undefined;
 };
 
-export default function SelectShow({ state, isPending, error }: Props) {
-    const [query, setQuery] = useState<string>();
+export default function SelectShow({
+    state,
+    isPending,
+    error,
+    defaultQuery,
+}: Props) {
+    const [query, setQuery] = useState<string | undefined>(defaultQuery);
     const showLoading = isPending;
     const showResults = state.shows.length > 0 && !showLoading;
     const showIntro =
@@ -41,6 +47,7 @@ export default function SelectShow({ state, isPending, error }: Props) {
                             name="query"
                             required={true}
                             id="show"
+                            defaultValue={defaultQuery}
                             onInput={(e) => setQuery(e.currentTarget.value)}
                             className="block w-full rounded-sm border-0 p-4 text-persian-900 ring-1 ring-persian-800 placeholder:text-gray-400 focus:ring-2 focus:ring-persian-900 sm:text-sm sm:leading-6"
                             placeholder="Search for a TV show"

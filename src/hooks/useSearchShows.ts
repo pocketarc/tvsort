@@ -11,11 +11,16 @@ type SearchShowsState = {
     error: string | null;
 };
 
-export function useSearchShows() {
+type InitialState = {
+    query: string;
+    shows: ShowSummary[];
+};
+
+export function useSearchShows(initialState?: InitialState) {
     const [isPending, startTransition] = useTransition();
     const [state, setState] = useState<SearchShowsState>({
-        query: null,
-        shows: [],
+        query: initialState?.query ?? null,
+        shows: initialState?.shows ?? [],
         error: null,
     });
 
@@ -28,6 +33,9 @@ export function useSearchShows() {
                     shows: result.shows,
                     error: null,
                 });
+                const url = new URL(window.location.href);
+                url.searchParams.set("query", result.query);
+                window.history.replaceState({}, "", url.toString());
             } catch (error) {
                 Sentry.captureException(error);
                 setState((prev) => ({

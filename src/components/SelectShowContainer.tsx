@@ -3,9 +3,20 @@
 import type { FormEvent } from "react";
 import SelectShow from "@/components/SelectShow";
 import { useSearchShows } from "@/hooks/useSearchShows";
+import type { ShowSummary } from "@/utils/types";
 
-export default function SelectShowContainer() {
-    const { query, shows, isPending, error, searchShows } = useSearchShows();
+type Props = {
+    initialState?:
+        | {
+              query: string;
+              shows: ShowSummary[];
+          }
+        | undefined;
+};
+
+export default function SelectShowContainer({ initialState }: Props) {
+    const { query, shows, isPending, error, searchShows } =
+        useSearchShows(initialState);
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -22,6 +33,7 @@ export default function SelectShowContainer() {
                 state={{ query, shows }}
                 isPending={isPending}
                 error={error}
+                defaultQuery={initialState?.query}
             />
         </form>
     );
