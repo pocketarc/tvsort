@@ -1,10 +1,13 @@
-import { getShowState } from "@/server/getShowState";
-import { useCallback } from "react";
 import * as Sentry from "@sentry/nextjs";
+import { useCallback } from "react";
 import { useFormState } from "react-dom";
+import { getShowState } from "@/server/getShowState";
 import type { GetShowStateResponse } from "@/utils/types";
 
-export default function useShow(matrixId: string, initialState: GetShowStateResponse) {
+export default function useShow(
+    matrixId: string,
+    initialState: GetShowStateResponse,
+) {
     const [state, formAction] = useFormState(getShowState, initialState);
     const showId = state.show.id;
 
@@ -21,7 +24,12 @@ export default function useShow(matrixId: string, initialState: GetShowStateResp
                 setTimeout(fetchShowState, 250);
             } else if (state.details) {
                 // Check if any episodes are still missing plot points:
-                const missingPlotPoints = state.details.show.seasons.flatMap((season) => season.episodes.filter((episode) => episode.plot_points.length === 0));
+                const missingPlotPoints = state.details.show.seasons.flatMap(
+                    (season) =>
+                        season.episodes.filter(
+                            (episode) => episode.plot_points.length === 0,
+                        ),
+                );
 
                 if (missingPlotPoints.length > 0) {
                     setTimeout(fetchShowState, 2000);

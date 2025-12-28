@@ -1,26 +1,43 @@
-import type { Episode, EpisodeModel, GeneratePlotPointsJobData, ShowModel, SyncShowJobData } from "@/utils/types";
-import type PgBoss from "pg-boss";
 import type { Knex } from "knex";
+import type PgBoss from "pg-boss";
 import { TMDB } from "tmdb-ts";
 import type { Image, Images } from "tmdb-ts/dist/types";
 import getShowRecord from "@/utils/getShowRecord";
+import type {
+    Episode,
+    EpisodeModel,
+    GeneratePlotPointsJobData,
+    ShowModel,
+    SyncShowJobData,
+} from "@/utils/types";
 
-export default async function handlerSyncShow(boss: PgBoss, knex: Knex, job: PgBoss.Job<SyncShowJobData>) {
-    if (!process.env["TMDB_API_ACCESS_TOKEN"]) {
+// biome-ignore lint/complexity/useLiteralKeys: https://github.com/biomejs/biome/issues/463
+const tmdbApiToken = process.env["TMDB_API_ACCESS_TOKEN"];
+
+export default async function handlerSyncShow(
+    boss: PgBoss,
+    knex: Knex,
+    job: PgBoss.Job<SyncShowJobData>,
+) {
+    if (!tmdbApiToken) {
         throw new Error("TMDB_API_ACCESS_TOKEN is not set.");
     }
 
     const showId = job.data.tmdbId;
 
-    const result = await knex<ShowModel>("shows").select().where("tmdb_id", showId).whereNotNull("synced_at").first();
+    const result = await knex<ShowModel>("shows")
+        .select()
+        .where("tmdb_id", showId)
+        .whereNotNull("synced_at")
+        .first();
 
     if (result) {
         // If the show has already been synced, then we don't need to do anything.
         return;
     }
 
-    const tmdb = new TMDB(process.env["TMDB_API_ACCESS_TOKEN"]);
-    const show = await tmdb.tvShows.details(parseInt(showId));
+    const tmdb = new TMDB(tmdbApiToken);
+    const show = await tmdb.tvShows.details(Number.parseInt(showId, 10));
 
     // Insert the show record if it doesn't exist.
     await getShowRecord(knex, show.id.toString());
@@ -49,14 +66,21 @@ export default async function handlerSyncShow(boss: PgBoss, knex: Knex, job: PgB
                             ["external_ids", "images"],
                         );
 
-                        const allEpisodeImages: Images & { stills?: Image[] } = episode.images as Images & { stills?: Image[] };
-                        const images = allEpisodeImages.stills?.map((still) => `https://image.tmdb.org/t/p/w300/${still.file_path}`) ?? [];
+                        const allEpisodeImages: Images & { stills?: Image[] } =
+                            episode.images as Images & { stills?: Image[] };
+                        const images =
+                            allEpisodeImages.stills?.map(
+                                (still) =>
+                                    `https://image.tmdb.org/t/p/w300/${still.file_path}`,
+                            ) ?? [];
 
                         const data: Episode = {
                             number: episode.episode_number,
                             title: episode.name,
                             description: episode.overview,
-                            first_aired_at: episode.air_date ? new Date(episode.air_date) : null,
+                            first_aired_at: episode.air_date
+                                ? new Date(episode.air_date)
+                                : null,
                             images,
                             season: season.season_number,
                             id: episode.id.toString(),
@@ -74,10 +98,16 @@ export default async function handlerSyncShow(boss: PgBoss, knex: Knex, job: PgB
                                 title: data.title,
                                 description: data.description,
                                 first_aired_at: data.first_aired_at,
-                                images: JSON.stringify(data.images) as unknown as string[],
+                                images: JSON.stringify(
+                                    data.images,
+                                ) as unknown as string[],
                                 imdb_id: data.imdb_id,
-                                imdb_summaries: JSON.stringify(data.imdb_summaries) as unknown as string[],
-                                main_plot_points: JSON.stringify(data.plot_points) as unknown as string[],
+                                imdb_summaries: JSON.stringify(
+                                    data.imdb_summaries,
+                                ) as unknown as string[],
+                                main_plot_points: JSON.stringify(
+                                    data.plot_points,
+                                ) as unknown as string[],
                             })
                             .onConflict("tmdb_id")
                             .ignore()

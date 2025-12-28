@@ -1,11 +1,12 @@
 import type { MetadataRoute } from "next";
 
+// biome-ignore lint/complexity/useLiteralKeys: https://github.com/biomejs/biome/issues/463
+const baseUrl = process.env["BASE_URL"];
+
 export default function robots(): MetadataRoute.Robots {
-    if (!process.env["BASE_URL"]) {
+    if (!baseUrl) {
         throw new Error("BASE_URL is not set.");
     }
-
-    const baseUrl = process.env["BASE_URL"];
 
     return {
         rules: {

@@ -1,21 +1,36 @@
+import * as Sentry from "@sentry/node";
 import type PgBoss from "pg-boss";
-import { isGeneratePlotPointsJob, isSyncShowJob, type JobData } from "@/utils/types";
-import getKnex from "@/utils/getKnex";
-import getPgBoss from "@/utils/getPgBoss";
 import handlerGeneratePlotPoints from "@/background/handlers/handlerGeneratePlotPoints";
 import handlerSyncShow from "@/background/handlers/handlerSyncShow";
-import * as Sentry from "@sentry/node";
+import getKnex from "@/utils/getKnex";
+import getPgBoss from "@/utils/getPgBoss";
+import {
+    isGeneratePlotPointsJob,
+    isSyncShowJob,
+    type JobData,
+} from "@/utils/types";
 
-Sentry.init({
-    dsn: process.env["SENTRY_DSN"] as string,
-    enabled: process.env["NODE_ENV"] === "production",
-    tracesSampleRate: 0,
-    debug: false,
-});
+// biome-ignore lint/complexity/useLiteralKeys: https://github.com/biomejs/biome/issues/463
+const sentryDsn = process.env["SENTRY_DSN"];
+// biome-ignore lint/complexity/useLiteralKeys: https://github.com/biomejs/biome/issues/463
+const nodeEnv = process.env["NODE_ENV"];
+
+if (sentryDsn) {
+    Sentry.init({
+        dsn: sentryDsn,
+        environment: nodeEnv,
+        enabled: nodeEnv === "production",
+        tracesSampleRate: 0,
+    });
+}
 
 async function main() {
+    console.log("Starting background job processor...");
+
     const knex = getKnex();
     const boss = await getPgBoss();
+
+    console.log("Connected to database, listening for jobs");
 
     await boss.work(
         "default",

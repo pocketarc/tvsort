@@ -1,11 +1,7 @@
 {
     "compilerOptions": {
         "target": "es2021",
-        "lib": [
-            "dom",
-            "dom.iterable",
-            "esnext"
-        ],
+        "lib": ["dom", "dom.iterable", "esnext"],
         "allowJs": false,
         "skipLibCheck": true,
         "strict": true,
@@ -15,7 +11,7 @@
         "moduleResolution": "bundler",
         "resolveJsonModule": true,
         "isolatedModules": true,
-        "jsx": "preserve",
+        "jsx": "react-jsx",
         "incremental": true,
         "plugins": [
             {
@@ -23,9 +19,7 @@
             }
         ],
         "paths": {
-            "@/*": [
-                "./src/*"
-            ]
+            "@/*": ["./src/*"]
         },
         "alwaysStrict": true,
         "forceConsistentCasingInFileNames": true,
@@ -57,9 +51,14 @@
         "next-env.d.ts",
         "**/*.ts",
         "**/*.tsx",
-        ".next/types/**/*.ts"
+        ".next/types/**/*.ts",
+        ".next/dev/types/**/*.ts"
     ],
-    "exclude": [
-        "node_modules"
-    ]
+    "exclude": ["node_modules"],
+    "ts-node": {
+        "compilerOptions": {
+            "module": "es2015",
+            "moduleResolution": "node"
+        }
+    }
 }

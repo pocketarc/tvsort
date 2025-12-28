@@ -1,7 +1,10 @@
-import React from "react";
 import type { Metadata, Viewport } from "next";
-import { getShowStateWithoutMatrix } from "@/utils/getShowStateWithoutMatrix";
+import type React from "react";
 import getKnex from "@/utils/getKnex";
+import { getShowStateWithoutMatrix } from "@/utils/getShowStateWithoutMatrix";
+
+// biome-ignore lint/complexity/useLiteralKeys: https://github.com/biomejs/biome/issues/463
+const baseUrl = process.env["BASE_URL"];
 
 export const viewport: Viewport = {
     themeColor: "#d90429",
@@ -11,23 +14,28 @@ export const viewport: Viewport = {
 
 type Params = { id: string };
 
-export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<Params>;
+}): Promise<Metadata> {
+    const { id } = await params;
     const knex = getKnex();
-    const { show } = await getShowStateWithoutMatrix(knex, params.id);
+    const { show } = await getShowStateWithoutMatrix(knex, id);
 
     const title = `${show.title} - TV Sort`;
     const description = `Which episode of ${show.title} is your favourite?`;
 
-    if (!process.env["BASE_URL"]) {
+    if (!baseUrl) {
         throw new Error("BASE_URL is not set.");
     }
 
     return {
-        metadataBase: new URL(process.env["BASE_URL"]),
+        metadataBase: new URL(baseUrl),
         title,
         description,
         alternates: {
-            canonical: `${process.env["BASE_URL"]}/show/${params.id}`,
+            canonical: `${baseUrl}/show/${id}`,
         },
         openGraph: {
             type: "website",

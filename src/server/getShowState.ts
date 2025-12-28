@@ -1,17 +1,20 @@
 "use server";
 
-import type { GetShowStateResponse } from "@/utils/types";
-import getKnex from "@/utils/getKnex";
 import { withServerActionInstrumentation } from "@sentry/nextjs";
 import { headers } from "next/headers";
+import getKnex from "@/utils/getKnex";
 import { getShowStateInternal } from "@/utils/getShowStateInternal";
+import type { GetShowStateResponse } from "@/utils/types";
 
-export const getShowState = async (_prevState: GetShowStateResponse, data: FormData): Promise<GetShowStateResponse> => {
+export const getShowState = async (
+    _prevState: GetShowStateResponse,
+    data: FormData,
+): Promise<GetShowStateResponse> => {
     return withServerActionInstrumentation(
         "findShows",
         {
             formData: data,
-            headers: headers(),
+            headers: await headers(),
             recordResponse: true,
         },
         async (): Promise<GetShowStateResponse> => {

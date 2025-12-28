@@ -5,9 +5,16 @@
 
 import * as Sentry from "@sentry/nextjs";
 
-Sentry.init({
-    dsn: process.env["SENTRY_DSN"] as string,
-    enabled: process.env["NODE_ENV"] === "production",
-    tracesSampleRate: 0,
-    debug: false,
-});
+// biome-ignore lint/complexity/useLiteralKeys: https://github.com/biomejs/biome/issues/463
+const sentryDsn = process.env["SENTRY_DSN"];
+// biome-ignore lint/complexity/useLiteralKeys: https://github.com/biomejs/biome/issues/463
+const nodeEnv = process.env["NODE_ENV"];
+
+if (sentryDsn) {
+    Sentry.init({
+        dsn: sentryDsn,
+        enabled: nodeEnv === "production",
+        tracesSampleRate: 0,
+        debug: false,
+    });
+}

@@ -1,10 +1,14 @@
-import type { GetShowStateResponse, SyncShowJobData } from "@/utils/types";
 import type { Knex } from "knex";
-import { getShowStateWithoutMatrix } from "@/utils/getShowStateWithoutMatrix";
-import { getShowDetails } from "@/utils/getShowDetails";
 import getPgBoss from "@/utils/getPgBoss";
+import { getShowDetails } from "@/utils/getShowDetails";
+import { getShowStateWithoutMatrix } from "@/utils/getShowStateWithoutMatrix";
+import type { GetShowStateResponse, SyncShowJobData } from "@/utils/types";
 
-export const getShowStateInternal = async (knex: Knex, showId: string, matrixId: string): Promise<GetShowStateResponse> => {
+export const getShowStateInternal = async (
+    knex: Knex,
+    showId: string,
+    matrixId: string,
+): Promise<GetShowStateResponse> => {
     const result = await getShowStateWithoutMatrix(knex, showId);
 
     if (result.synced) {

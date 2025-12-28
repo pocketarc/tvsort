@@ -1,6 +1,6 @@
 import type { Knex } from "knex";
-import type { ShowModel } from "@/utils/types";
 import getTmdbShowData from "@/utils/getTmdbShowData";
+import type { ShowModel } from "@/utils/types";
 
 export async function up(knex: Knex): Promise<void> {
     await knex.schema.alterTable("shows", (table) => {
@@ -12,7 +12,9 @@ export async function up(knex: Knex): Promise<void> {
     // Update all shows with Wikidata IDs.
     for (const show of shows) {
         const data = await getTmdbShowData(show.tmdb_id);
-        await knex<ShowModel>("shows").where("tmdb_id", show.tmdb_id).update(data);
+        await knex<ShowModel>("shows")
+            .where("tmdb_id", show.tmdb_id)
+            .update(data);
     }
 
     await knex.schema.alterTable("episodes", (table) => {

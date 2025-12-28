@@ -1,6 +1,6 @@
-import type { Comparison } from "@/utils/monkeySort";
-import PgBoss from "pg-boss";
+import type PgBoss from "pg-boss";
 import type { GetShowDetailsResponse } from "@/utils/getShowDetails";
+import type { Comparison } from "@/utils/monkeySort";
 
 export type ShowSummary = {
     id: string;
@@ -92,11 +92,15 @@ export type SyncShowJobData = {
 
 export type JobData = GeneratePlotPointsJobData | SyncShowJobData;
 
-export function isGeneratePlotPointsJob(data: PgBoss.Job<JobData>): data is PgBoss.Job<GeneratePlotPointsJobData> {
+export function isGeneratePlotPointsJob(
+    data: PgBoss.Job<JobData>,
+): data is PgBoss.Job<GeneratePlotPointsJobData> {
     return data.data.jobName === "generate-plot-points";
 }
 
-export function isSyncShowJob(data: PgBoss.Job<JobData>): data is PgBoss.Job<SyncShowJobData> {
+export function isSyncShowJob(
+    data: PgBoss.Job<JobData>,
+): data is PgBoss.Job<SyncShowJobData> {
     return data.data.jobName === "sync-show";
 }
 

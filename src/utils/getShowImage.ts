@@ -1,4 +1,7 @@
-export default function getShowImage(title: string, image: string | null): string {
+export default function getShowImage(
+    title: string,
+    image: string | null,
+): string {
     if (image) {
         if (image.startsWith("https://")) {
             return image;

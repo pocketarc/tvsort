@@ -1,0 +1,76 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tvsort
+      POSTGRES_PASSWORD: tvsort
+      POSTGRES_DB: tvsort
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tvsort -d tvsort"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/dev/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=tvsort
+      - DB_PASSWORD=tvsort
+      - DB_DATABASE=tvsort
+      - TMDB_API_ACCESS_TOKEN=${TMDB_API_ACCESS_TOKEN}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_ORGANIZATION_ID=${OPENAI_ORGANIZATION_ID}
+      - BASE_URL=http://tvsort.orb.local
+    labels:
+      - dev.orbstack.domains=tvsort.orb.local
+    command: bun run dev:docker
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  jobs:
+    build:
+      context: .
+      dockerfile: docker/dev/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      app:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=tvsort
+      - DB_PASSWORD=tvsort
+      - DB_DATABASE=tvsort
+      - TMDB_API_ACCESS_TOKEN=${TMDB_API_ACCESS_TOKEN}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_ORGANIZATION_ID=${OPENAI_ORGANIZATION_ID}
+      - BASE_URL=http://tvsort.orb.local
+    command: bun run jobs:docker
+
+volumes:
+  postgres_data:
+  node_modules:

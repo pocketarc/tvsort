@@ -1,3 +1,57 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
+
+@theme {
+    /* Persian color palette */
+    --color-persian-50: #fff0f3;
+    --color-persian-100: #ffdee4;
+    --color-persian-200: #ffc2cd;
+    --color-persian-300: #ff98aa;
+    --color-persian-400: #ff5c78;
+    --color-persian-500: #ff2a4f;
+    --color-persian-600: #f80a33;
+    --color-persian-700: #d90429;
+    --color-persian-800: #ac0824;
+    --color-persian-900: #8e0e24;
+    --color-persian-950: #4e010e;
+    --color-persian: #d90429;
+
+    /* Caribbean color palette */
+    --color-caribbean-50: #effefa;
+    --color-caribbean-100: #c7fff0;
+    --color-caribbean-200: #90ffe3;
+    --color-caribbean-300: #50f8d3;
+    --color-caribbean-400: #1ce5be;
+    --color-caribbean-500: #04d9b4;
+    --color-caribbean-600: #00a189;
+    --color-caribbean-700: #05806f;
+    --color-caribbean-800: #09665a;
+    --color-caribbean-900: #0d544a;
+    --color-caribbean-950: #00332f;
+    --color-caribbean: #04d9b4;
+
+    /* Font sizes */
+    --font-size-6xl: 3.5rem;
+    --font-size-7xl: 4rem;
+
+    /* Font families */
+    --font-title: var(--font-title);
+    --font-body: var(--font-body);
+
+    /* Animations */
+    --animate-spin-slow: spin 5s linear infinite;
+}
+
+/* Text shadow utilities */
+@utility text-shadow-sm {
+    text-shadow: 1px 1px 0px var(--tw-shadow-color);
+}
+
+@utility text-shadow {
+    text-shadow: 2px 2px 0px var(--tw-shadow-color);
+}
+
+@utility text-shadow-lg {
+    text-shadow: 4px 4px 0px var(--tw-shadow-color);
+}

@@ -1,7 +1,7 @@
-import getImdbData from "@/utils/getImdbData";
 import generateEpisodePlotPoints from "@/utils/generateEpisodePlotPoints";
-import type { EpisodeModel, ShowModel } from "@/utils/types";
+import getImdbData from "@/utils/getImdbData";
 import { getWikipediaData } from "@/utils/getWikipediaData";
+import type { EpisodeModel, ShowModel } from "@/utils/types";
 
 const main = async () => {
     const imdbId = "tt0582423";
@@ -11,7 +11,12 @@ const main = async () => {
     const number = 5;
 
     const summaries = await getImdbData(imdbId);
-    const wikipedia = await getWikipediaData(imdbId, showWikidataId, season, number);
+    const wikipedia = await getWikipediaData(
+        imdbId,
+        showWikidataId,
+        season,
+        number,
+    );
 
     console.log("Wikipedia data", wikipedia);
     console.log("IMDB data", summaries);

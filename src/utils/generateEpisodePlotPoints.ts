@@ -1,6 +1,6 @@
+import * as Sentry from "@sentry/nextjs";
 import { z } from "zod";
 import generateJson from "@/utils/generateJson";
-import * as Sentry from "@sentry/nextjs";
 import type { EpisodeModel, ShowModel } from "@/utils/types";
 
 type EpisodePlotPoints = {
@@ -8,15 +8,25 @@ type EpisodePlotPoints = {
     main_points: string[];
 };
 
-export default async function generateEpisodePlotPoints(show: ShowModel, episode: EpisodeModel): Promise<EpisodePlotPoints> {
-    console.log(`Generating plot points for ${show.tmdb_id} (${show.title})...`);
+export default async function generateEpisodePlotPoints(
+    show: ShowModel,
+    episode: EpisodeModel,
+): Promise<EpisodePlotPoints> {
+    console.log(
+        `Generating plot points for ${show.tmdb_id} (${show.title})...`,
+    );
 
     const zodSchema = z.object({
         type: z.literal("object"),
         plot_points: z.array(z.string()),
     });
 
-    const summaries = [episode.description, ...episode.imdb_summaries, ...episode.imdb_synopsis, episode.wikipedia_text];
+    const summaries = [
+        episode.description,
+        ...episode.imdb_summaries,
+        ...episode.imdb_synopsis,
+        episode.wikipedia_text,
+    ];
 
     // We do this because sometimes one of the IMDB summaries matches the episode description.
     const uniqueSummaries = [...new Set(summaries)];
@@ -32,7 +42,9 @@ export default async function generateEpisodePlotPoints(show: ShowModel, episode
             },
         ]);
 
-        console.log(`Grabbed all points. Now grabbing the 3 most different points...`);
+        console.log(
+            `Grabbed all points. Now grabbing the 3 most different points...`,
+        );
 
         let mainPoints = await generateJson(zodSchema, prompt, [
             {
@@ -45,12 +57,15 @@ export default async function generateEpisodePlotPoints(show: ShowModel, episode
             },
             {
                 role: "user",
-                content: "List the 3 most different points. Use much shorter sentences.",
+                content:
+                    "List the 3 most different points. Use much shorter sentences.",
             },
         ]);
 
         if (mainPoints.plot_points.join("").length > 275) {
-            console.log(`The plot points are too long. Generating shorter points...`);
+            console.log(
+                `The plot points are too long. Generating shorter points...`,
+            );
 
             mainPoints = await generateJson(zodSchema, prompt, [
                 {
@@ -63,7 +78,8 @@ export default async function generateEpisodePlotPoints(show: ShowModel, episode
                 },
                 {
                     role: "user",
-                    content: "List the 3 most different points. Use much shorter sentences.",
+                    content:
+                        "List the 3 most different points. Use much shorter sentences.",
                 },
                 {
                     role: "assistant",

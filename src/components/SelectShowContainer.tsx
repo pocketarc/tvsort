@@ -1,8 +1,8 @@
 "use client";
 
 import { useFormState } from "react-dom";
-import { findShows } from "@/server/findShows";
 import SelectShow from "@/components/SelectShow";
+import { findShows } from "@/server/findShows";
 
 export default function SelectShowContainer() {
     const [state, formAction] = useFormState(findShows, {

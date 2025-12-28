@@ -1,18 +1,19 @@
+import { formatRFC3339 } from "date-fns";
 import type { MetadataRoute } from "next";
+import { headers } from "next/headers";
 import getKnex from "@/utils/getKnex";
 import type { ShowModel } from "@/utils/types";
-import { formatRFC3339 } from "date-fns";
-import { headers } from "next/headers";
+
+// biome-ignore lint/complexity/useLiteralKeys: https://github.com/biomejs/biome/issues/463
+const baseUrl = process.env["BASE_URL"];
 
 export async function GET() {
     // This is here to force the route to be dynamic.
-    headers();
+    await headers();
 
-    if (!process.env["BASE_URL"]) {
+    if (!baseUrl) {
         throw new Error("BASE_URL is not set.");
     }
-
-    const baseUrl = process.env["BASE_URL"];
 
     const sitemap: MetadataRoute.Sitemap = [
         {
@@ -56,5 +57,7 @@ export async function GET() {
    </urlset>
  `;
 
-    return new Response(xmlContent, { headers: { "Content-Type": "text/xml" } });
+    return new Response(xmlContent, {
+        headers: { "Content-Type": "text/xml" },
+    });
 }

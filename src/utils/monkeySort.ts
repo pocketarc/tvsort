@@ -20,7 +20,11 @@ export class ComparisonMatrix<T extends SortableObject> {
     public matrix: Record<Key, Record<Key, Comparison>>;
     public explicitCount: number;
 
-    public constructor(items: T[], matrix: Record<Key, Record<Key, Comparison>> = {}, explicitCount = 0) {
+    public constructor(
+        items: T[],
+        matrix: Record<Key, Record<Key, Comparison>> = {},
+        explicitCount = 0,
+    ) {
         this.items = items;
         this.matrix = matrix as Record<Key, Record<Key, Comparison>>;
         this.explicitCount = explicitCount;
@@ -60,10 +64,14 @@ export class ComparisonMatrix<T extends SortableObject> {
     }
 
     protected opposite(value: Comparison) {
-        return value == "=" ? "=" : value == "<" ? ">" : "<";
+        return value === "=" ? "=" : value === "<" ? ">" : "<";
     }
 
-    public get(a: T | undefined, b: T | undefined, failOnUnknown: boolean): Comparison {
+    public get(
+        a: T | undefined,
+        b: T | undefined,
+        failOnUnknown: boolean,
+    ): Comparison {
         const keyA: Key | undefined = a?.id;
         const keyB: Key | undefined = b?.id;
 
@@ -75,7 +83,9 @@ export class ComparisonMatrix<T extends SortableObject> {
                 if (a && b) {
                     throw new NeedUserInput(a, b);
                 } else {
-                    throw new Error(`Cannot compare; a and/or b are not defined.`);
+                    throw new Error(
+                        `Cannot compare; a and/or b are not defined.`,
+                    );
                 }
             } else {
                 return "=";
@@ -103,14 +113,18 @@ export class ComparisonMatrix<T extends SortableObject> {
         const subItemsB = this.matrix[b];
 
         if (!subItemsA) {
-            throw new Error(`Cannot update transitive; subItems is not defined for key: '${a}'.`);
+            throw new Error(
+                `Cannot update transitive; subItems is not defined for key: '${a}'.`,
+            );
         }
 
         if (!subItemsB) {
-            throw new Error(`Cannot update transitive; subItems is not defined for key: '${b}'.`);
+            throw new Error(
+                `Cannot update transitive; subItems is not defined for key: '${b}'.`,
+            );
         }
 
-        if (subItemsA[b] == "=") {
+        if (subItemsA[b] === "=") {
             // ((Cij = “=”) ⋀ (Cjk is known)) ⇒ Cik = Cjk
             Object.keys(subItemsB).forEach((c) => {
                 // It can't be undefined; we're looping over it right now.
@@ -135,10 +149,15 @@ export class ComparisonMatrix<T extends SortableObject> {
                 const value = subItemsA[b];
 
                 if (value === undefined) {
-                    throw new Error(`Cannot update transitive; value is not defined for ${b}/${c}.`);
+                    throw new Error(
+                        `Cannot update transitive; value is not defined for ${b}/${c}.`,
+                    );
                 }
 
-                if (!subItemsA[c] && (subItemsA[b] == subItemsB[c] || subItemsB[c] == "=")) {
+                if (
+                    !subItemsA[c] &&
+                    (subItemsA[b] === subItemsB[c] || subItemsB[c] === "=")
+                ) {
                     /*
                     This is here to help understand what's going on. Uncomment it if you want to see it in action.
 
@@ -155,7 +174,10 @@ export class ComparisonMatrix<T extends SortableObject> {
     }
 }
 
-export function monkeySort<T extends SortableObject>(matrix: ComparisonMatrix<T>, failOnUnknown: boolean = true) {
+export function monkeySort<T extends SortableObject>(
+    matrix: ComparisonMatrix<T>,
+    failOnUnknown: boolean = true,
+) {
     // Clone the array, so we don't mutate the original.
     const array = [...matrix.items];
 
@@ -164,8 +186,8 @@ export function monkeySort<T extends SortableObject>(matrix: ComparisonMatrix<T>
         let j = high;
         const x = array[Math.floor((low + high) / 2)];
         do {
-            while (matrix.get(array[i], x, failOnUnknown) == ">") i++;
-            while (matrix.get(array[j], x, failOnUnknown) == "<") j--;
+            while (matrix.get(array[i], x, failOnUnknown) === ">") i++;
+            while (matrix.get(array[j], x, failOnUnknown) === "<") j--;
             if (i <= j) {
                 const temp = array[i];
                 const temp2 = array[j];
@@ -173,7 +195,9 @@ export function monkeySort<T extends SortableObject>(matrix: ComparisonMatrix<T>
                     array[i] = temp2;
                     array[j] = temp;
                 } else {
-                    throw new Error(`Cannot swap; temp and/or temp2 are not defined.`);
+                    throw new Error(
+                        `Cannot swap; temp and/or temp2 are not defined.`,
+                    );
                 }
                 i++;
                 j--;

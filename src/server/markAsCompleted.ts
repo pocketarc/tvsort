@@ -1,12 +1,15 @@
 "use server";
 
-import type { Comparison } from "@/utils/monkeySort";
-import getKnex from "@/utils/getKnex";
-import type { ComparisonModel, MatrixModel } from "@/utils/types";
 import { withServerActionInstrumentation } from "@sentry/nextjs";
 import { headers } from "next/headers";
+import getKnex from "@/utils/getKnex";
+import type { Comparison } from "@/utils/monkeySort";
+import type { ComparisonModel, MatrixModel } from "@/utils/types";
 
-export default async function markAsCompleted<Key extends string>(matrixId: string, matrix: Record<Key, Record<Key, Comparison>>): Promise<void> {
+export default async function markAsCompleted<Key extends string>(
+    matrixId: string,
+    matrix: Record<Key, Record<Key, Comparison>>,
+): Promise<void> {
     const data: FormData = new FormData();
     data.append("matrixId", matrixId);
     data.append("matrix", JSON.stringify(matrix));
@@ -15,7 +18,7 @@ export default async function markAsCompleted<Key extends string>(matrixId: stri
         "markAsCompleted",
         {
             formData: data,
-            headers: headers(),
+            headers: await headers(),
             recordResponse: true,
         },
         async () => {
@@ -28,10 +31,16 @@ export default async function markAsCompleted<Key extends string>(matrixId: stri
             // trying to submit invalid data, I'll add validation then.
 
             await knex.transaction(async (trx) => {
-                await trx<ComparisonModel>("comparisons").delete().where("matrix_id", matrixId);
+                await trx<ComparisonModel>("comparisons")
+                    .delete()
+                    .where("matrix_id", matrixId);
 
-                for (const [episodeAId, episodeBComparisons] of Object.entries(matrix)) {
-                    for (const [episodeBId, comparison] of Object.entries(episodeBComparisons as Record<Key, Comparison>)) {
+                for (const [episodeAId, episodeBComparisons] of Object.entries(
+                    matrix,
+                )) {
+                    for (const [episodeBId, comparison] of Object.entries(
+                        episodeBComparisons as Record<Key, Comparison>,
+                    )) {
                         await trx<ComparisonModel>("comparisons").insert({
                             matrix_id: matrixId,
                             episode_a_id: episodeAId,
@@ -41,9 +50,11 @@ export default async function markAsCompleted<Key extends string>(matrixId: stri
                     }
                 }
 
-                await trx<MatrixModel>("matrices").where("id", matrixId).update({
-                    completed_at: new Date(),
-                });
+                await trx<MatrixModel>("matrices")
+                    .where("id", matrixId)
+                    .update({
+                        completed_at: new Date(),
+                    });
             });
         },
     );

@@ -1,14 +1,17 @@
 "use server";
 
-import type { ShowSummary } from "@/utils/types";
+import { withServerActionInstrumentation } from "@sentry/nextjs";
+import { parse as parseDate } from "date-fns/parse";
+import { headers } from "next/headers";
 import { TMDB } from "tmdb-ts";
 import { z } from "zod";
-import { parse as parseDate } from "date-fns/parse";
-import getShowImage from "@/utils/getShowImage";
 import getKnex from "@/utils/getKnex";
-import { withServerActionInstrumentation } from "@sentry/nextjs";
-import { headers } from "next/headers";
+import getShowImage from "@/utils/getShowImage";
 import getShowRecord from "@/utils/getShowRecord";
+import type { ShowSummary } from "@/utils/types";
+
+// biome-ignore lint/complexity/useLiteralKeys: https://github.com/biomejs/biome/issues/463
+const tmdbApiToken = process.env["TMDB_API_ACCESS_TOKEN"];
 
 const schema = z.object({
     query: z.string(),
@@ -19,20 +22,23 @@ export type FindShowsResponse = {
     shows: ShowSummary[];
 };
 
-export const findShows = async (_prevState: FindShowsResponse, data: FormData): Promise<FindShowsResponse> => {
+export const findShows = async (
+    _prevState: FindShowsResponse,
+    data: FormData,
+): Promise<FindShowsResponse> => {
     return withServerActionInstrumentation(
         "findShows",
         {
             formData: data,
-            headers: headers(),
+            headers: await headers(),
             recordResponse: true,
         },
         async () => {
-            if (!process.env["TMDB_API_ACCESS_TOKEN"]) {
+            if (!tmdbApiToken) {
                 throw new Error("TMDB_API_ACCESS_TOKEN is not set.");
             }
 
-            const tmdb = new TMDB(process.env["TMDB_API_ACCESS_TOKEN"]);
+            const tmdb = new TMDB(tmdbApiToken);
             const { query } = schema.parse({
                 query: data.get("query"),
             });
@@ -48,7 +54,9 @@ export const findShows = async (_prevState: FindShowsResponse, data: FormData): 
             const shows = results.results.map((show) => ({
                 id: show.id.toString(),
                 title: show.name,
-                first_aired_at: show.first_air_date ? parseDate(show.first_air_date, "yyyy-MM-dd", new Date()) : null,
+                first_aired_at: show.first_air_date
+                    ? parseDate(show.first_air_date, "yyyy-MM-dd", new Date())
+                    : null,
                 image: getShowImage(show.name, show.poster_path),
             }));
 

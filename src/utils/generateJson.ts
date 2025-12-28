@@ -1,7 +1,12 @@
 import { OpenAI } from "openai";
-import { z } from "zod";
-import { zodToJsonSchema } from "@/utils/zodToJsonSchema";
+import type { z } from "zod";
 import { parseUnsafeJson } from "@/utils/parseUnsafeJson";
+import { zodToJsonSchema } from "@/utils/zodToJsonSchema";
+
+// biome-ignore lint/complexity/useLiteralKeys: https://github.com/biomejs/biome/issues/463
+const openaiApiKey = process.env["OPENAI_API_KEY"];
+// biome-ignore lint/complexity/useLiteralKeys: https://github.com/biomejs/biome/issues/463
+const openaiOrganizationId = process.env["OPENAI_ORGANIZATION_ID"];
 
 export default async function generateJson<Output>(
     schema: z.ZodType<Output>,
@@ -9,13 +14,13 @@ export default async function generateJson<Output>(
     messages: OpenAI.ChatCompletionMessageParam[],
     attempt = 1,
 ): Promise<Output> {
-    if (!process.env["OPENAI_API_KEY"] || !process.env["OPENAI_ORGANIZATION_ID"]) {
+    if (!openaiApiKey || !openaiOrganizationId) {
         throw new Error("OPENAI_API_KEY or OPENAI_ORGANIZATION_ID is not set.");
     }
 
     const client = new OpenAI({
-        organization: process.env["OPENAI_ORGANIZATION_ID"],
-        apiKey: process.env["OPENAI_API_KEY"],
+        organization: openaiOrganizationId,
+        apiKey: openaiApiKey,
     });
 
     const format = JSON.stringify(zodToJsonSchema(schema));
@@ -43,11 +48,15 @@ ${systemPrompt}
 
     try {
         if (response.choices[0]?.message.content) {
-            const object = parseUnsafeJson(response.choices[0]?.message.content);
+            const object = parseUnsafeJson(
+                response.choices[0]?.message.content,
+            );
             if (object) {
                 return schema.parse(object);
             } else {
-                throw new Error(`Could not parse JSON. Response received was: ${response.choices[0].message.content}`);
+                throw new Error(
+                    `Could not parse JSON. Response received was: ${response.choices[0].message.content}`,
+                );
             }
         } else {
             throw new Error(`Could not parse JSON. No response received.`);

@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { intervalToDuration } from "date-fns";
 import clsx from "clsx";
+import { intervalToDuration } from "date-fns";
+import Link from "next/link";
 
 type Props = {
     comparisonsLeft?: number;
@@ -22,14 +22,34 @@ export default function Footer({ comparisonsLeft }: Props) {
     return (
         <div className="w-full mx-auto bg-persian-900 p-4">
             <div className="text-white text-center text-xs sm:text-sm">
-                {comparisonsLeft !== undefined && <>~{formattedDuration} left &middot; </>}
-                Built <span className={clsx(comparisonsLeft ? "hidden sm:inline-block" : "")}>with 🩵</span> by{" "}
-                <Link href="https://pocketarc.com" className="underline underline-offset-4">
+                {comparisonsLeft !== undefined && (
+                    <>~{formattedDuration} left &middot; </>
+                )}
+                Built{" "}
+                <span
+                    className={clsx(
+                        comparisonsLeft ? "hidden sm:inline-block" : "",
+                    )}
+                >
+                    with 🩵
+                </span>{" "}
+                by{" "}
+                <Link
+                    href="https://pocketarc.com"
+                    className="underline underline-offset-4"
+                >
                     PocketArC
                 </Link>{" "}
-                <span className={clsx(comparisonsLeft ? "hidden sm:inline-block" : "")}>
+                <span
+                    className={clsx(
+                        comparisonsLeft ? "hidden sm:inline-block" : "",
+                    )}
+                >
                     with data from{" "}
-                    <Link href="https://www.themoviedb.org" className="underline underline-offset-4">
+                    <Link
+                        href="https://www.themoviedb.org"
+                        className="underline underline-offset-4"
+                    >
                         TMDB
                     </Link>{" "}
                 </span>
@@ -38,7 +58,10 @@ export default function Footer({ comparisonsLeft }: Props) {
                     About
                 </Link>{" "}
                 &middot;{" "}
-                <Link href="https://twitter.com/pocketarc" className="underline underline-offset-4">
+                <Link
+                    href="https://twitter.com/pocketarc"
+                    className="underline underline-offset-4"
+                >
                     Twitter
                 </Link>
             </div>

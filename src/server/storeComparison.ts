@@ -1,12 +1,17 @@
 "use server";
 
-import type { Comparison } from "@/utils/monkeySort";
-import getKnex from "@/utils/getKnex";
-import type { ComparisonModel } from "@/utils/types";
 import { withServerActionInstrumentation } from "@sentry/nextjs";
 import { headers } from "next/headers";
+import getKnex from "@/utils/getKnex";
+import type { Comparison } from "@/utils/monkeySort";
+import type { ComparisonModel } from "@/utils/types";
 
-export const storeComparison = async (matrixId: string, episodeAId: string, episodeBId: string, comparison: Comparison): Promise<void> => {
+export const storeComparison = async (
+    matrixId: string,
+    episodeAId: string,
+    episodeBId: string,
+    comparison: Comparison,
+): Promise<void> => {
     const data: FormData = new FormData();
     data.append("matrixId", matrixId);
     data.append("episodeAId", episodeAId);
@@ -17,7 +22,7 @@ export const storeComparison = async (matrixId: string, episodeAId: string, epis
         "findShows",
         {
             formData: data,
-            headers: headers(),
+            headers: await headers(),
             recordResponse: true,
         },
         async () => {

@@ -1,9 +1,9 @@
-import knex from "knex";
 import type { Knex } from "knex";
+import knex from "knex";
 import knexConfig from "../../knexfile";
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
-declare module globalThis {
+declare namespace globalThis {
     let knex: Knex | undefined;
 }
 

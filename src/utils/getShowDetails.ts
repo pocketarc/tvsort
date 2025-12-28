@@ -1,9 +1,15 @@
-import type { ComparisonModel, EpisodeModel, GeneratePlotPointsJobData, MatrixModel, Show } from "@/utils/types";
 import getKnex from "@/utils/getKnex";
-import type { Comparison } from "@/utils/monkeySort";
+import getPgBoss from "@/utils/getPgBoss";
 import getShowImage from "@/utils/getShowImage";
 import getShowRecord from "@/utils/getShowRecord";
-import getPgBoss from "@/utils/getPgBoss";
+import type { Comparison } from "@/utils/monkeySort";
+import type {
+    ComparisonModel,
+    EpisodeModel,
+    GeneratePlotPointsJobData,
+    MatrixModel,
+    Show,
+} from "@/utils/types";
 
 export type GetShowDetailsResponse = {
     show: Show;
@@ -13,13 +19,20 @@ export type GetShowDetailsResponse = {
     isComplete: boolean;
 };
 
-export const getShowDetails = async (matrixId: string, showId: string): Promise<GetShowDetailsResponse | undefined> => {
+export const getShowDetails = async (
+    matrixId: string,
+    showId: string,
+): Promise<GetShowDetailsResponse | undefined> => {
     console.log("Getting show details for", showId);
 
     const knex = getKnex();
     const result = await getShowRecord(knex, showId);
 
-    const episodes = await knex<EpisodeModel>("episodes").select().where("show_id", showId).orderBy("season").orderBy("number");
+    const episodes = await knex<EpisodeModel>("episodes")
+        .select()
+        .where("show_id", showId)
+        .orderBy("season")
+        .orderBy("number");
 
     const showDetails: Show = {
         id: result.tmdb_id,
@@ -70,7 +83,10 @@ export const getShowDetails = async (matrixId: string, showId: string): Promise<
             }),
     };
 
-    const matrixRecord = await knex<MatrixModel>("matrices").select().where("id", matrixId).first();
+    const matrixRecord = await knex<MatrixModel>("matrices")
+        .select()
+        .where("id", matrixId)
+        .first();
 
     if (!matrixRecord) {
         await knex<MatrixModel>("matrices").insert({
@@ -79,7 +95,10 @@ export const getShowDetails = async (matrixId: string, showId: string): Promise<
         });
     }
 
-    const comparisons = await knex<ComparisonModel>("comparisons").where("matrix_id", matrixId);
+    const comparisons = await knex<ComparisonModel>("comparisons").where(
+        "matrix_id",
+        matrixId,
+    );
     const matrix: Record<string, Record<string, Comparison>> = {};
     let explicitCount = 0;
 
@@ -89,7 +108,8 @@ export const getShowDetails = async (matrixId: string, showId: string): Promise<
         }
 
         // @ts-expect-error - It cannot be undefined; it's been set above.
-        matrix[comparison.episode_a_id][comparison.episode_b_id] = comparison.comparison;
+        matrix[comparison.episode_a_id][comparison.episode_b_id] =
+            comparison.comparison;
 
         explicitCount++;
     }

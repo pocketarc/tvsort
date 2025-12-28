@@ -1,6 +1,6 @@
 import Footer from "@/components/Footer";
-import SelectShowContainer from "@/components/SelectShowContainer";
 import Header from "@/components/Header";
+import SelectShowContainer from "@/components/SelectShowContainer";
 
 export default function Page() {
     return (
