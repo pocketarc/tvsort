@@ -1,8 +1,11 @@
+"use client";
+
 import { intlFormat } from "date-fns/intlFormat";
 import { ExternalLinkIcon } from "lucide-react";
 import Link from "next/link";
 import Episode from "@/components/Episode";
 import Footer from "@/components/Footer";
+import { useAnalytics } from "@/utils/analytics";
 import type { Episode as EpisodeType, Show } from "@/utils/types";
 
 type Props = {
@@ -11,6 +14,7 @@ type Props = {
 };
 
 export default function Results({ show, results }: Props) {
+    const plausible = useAnalytics();
     const topEpisodes = results.slice(0, 4);
     const bottomEpisodes = results.slice(-4).reverse();
     const lastStanding = results.length;
@@ -31,6 +35,8 @@ export default function Results({ show, results }: Props) {
     }
 
     const shareResults = async () => {
+        plausible("results-shared", { props: { showId: show.id } });
+
         const text = `Check out my ranked list of ${show.title} episodes`;
 
         const shareData: ShareData = {

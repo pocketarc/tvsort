@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/nextjs";
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { trackServerEvent } from "@/utils/analytics";
 import type { ApiErrorResponse, SearchShowsResponse } from "@/utils/apiTypes";
 import { searchShows } from "@/utils/searchShows";
 
@@ -33,6 +34,15 @@ export async function GET(
         return NextResponse.json(result);
     } catch (error) {
         Sentry.captureException(error);
+        void trackServerEvent(
+            "api-error",
+            {
+                endpoint: "/api/shows",
+                statusCode: 500,
+                errorType: error instanceof Error ? error.name : "Unknown",
+            },
+            request,
+        );
         return NextResponse.json(
             { error: "Internal server error" },
             { status: 500 },

@@ -1,6 +1,9 @@
+"use client";
+
 import { format } from "date-fns/format";
 import Image from "next/image";
 import Link from "next/link";
+import { useAnalytics } from "@/utils/analytics";
 import type { ShowSummary } from "@/utils/types";
 
 type Props = {
@@ -8,6 +11,8 @@ type Props = {
 };
 
 export default function ListShows({ shows }: Props) {
+    const plausible = useAnalytics();
+
     return (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 py-2 my-4">
             {shows.map((show) => (
@@ -15,6 +20,11 @@ export default function ListShows({ shows }: Props) {
                     key={show.id}
                     href={`/show/${show.id}`}
                     className="p-4 bg-persian-800/50 rounded-md"
+                    onClick={() => {
+                        plausible("show-selected", {
+                            props: { showId: show.id, showTitle: show.title },
+                        });
+                    }}
                 >
                     <Image
                         src={show.image}

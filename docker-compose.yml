@@ -25,7 +25,6 @@ services:
         condition: service_healthy
     volumes:
       - .:/app
-      - node_modules:/app/node_modules
     environment:
       - DB_HOST=postgres
       - DB_PORT=5432
@@ -59,7 +58,6 @@ services:
         condition: service_healthy
     volumes:
       - .:/app
-      - node_modules:/app/node_modules
     environment:
       - DB_HOST=postgres
       - DB_PORT=5432
@@ -72,6 +70,34 @@ services:
       - BASE_URL=http://tvsort.orb.local
     command: bun run jobs:docker
 
+  devtools:
+    build:
+      context: .
+      dockerfile: docker/dev/Dockerfile
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 1s
+    tty: true
+    stdin_open: true
+    working_dir: /app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - ~/.ssh:/root/.ssh:ro
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=tvsort
+      - DB_PASSWORD=tvsort
+      - DB_DATABASE=tvsort
+      - TMDB_API_ACCESS_TOKEN=${TMDB_API_ACCESS_TOKEN}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENROUTER_MODEL=${OPENROUTER_MODEL:-google/gemini-3-flash-preview}
+      - BASE_URL=http://tvsort.orb.local
+    entrypoint: [""]
+    command: ["sleep", "infinity"]
+
 volumes:
   postgres_data:
-  node_modules:

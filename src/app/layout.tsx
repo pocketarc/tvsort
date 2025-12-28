@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Bebas_Neue as BebasNeue, Inter } from "next/font/google";
-import Script from "next/script";
+import PlausibleProvider from "next-plausible";
 import type React from "react";
 import "./globals.css";
 
@@ -57,19 +57,19 @@ export default function RootLayout({
         throw new Error("BASE_URL is not set.");
     }
 
-    const domain = new URL(baseUrl).hostname;
-
     return (
         <html lang="en" className="h-full">
             <body className={`${inter.variable} ${bebas.variable} h-full`}>
-                {children}
+                <PlausibleProvider domain="tvsort.com">
+                    {children}
+                </PlausibleProvider>
+                <Script
+                    src={`${baseUrl}/js/script.js`}
+                    strategy="afterInteractive"
+                    data-domain="tvsort.com"
+                    data-api="/api/event"
+                />
             </body>
-            <Script
-                src={`${baseUrl}/js/script.js`}
-                strategy="afterInteractive"
-                data-domain={domain}
-                data-api="/api/event"
-            />
         </html>
     );
 }

@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/nextjs";
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { trackServerEvent } from "@/utils/analytics";
 import type {
     ApiErrorResponse,
     StoreComparisonResponse,
@@ -49,6 +50,15 @@ export async function POST(
         return NextResponse.json({ success: true }, { status: 201 });
     } catch (error) {
         Sentry.captureException(error);
+        void trackServerEvent(
+            "api-error",
+            {
+                endpoint: "/api/comparisons",
+                statusCode: 500,
+                errorType: error instanceof Error ? error.name : "Unknown",
+            },
+            request,
+        );
         return NextResponse.json(
             { error: "Internal server error" },
             { status: 500 },

@@ -1,5 +1,6 @@
 import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
+import { withPlausibleProxy } from "next-plausible";
 
 // biome-ignore lint/complexity/useLiteralKeys: https://github.com/biomejs/biome/issues/463
 const sentryDsn = process.env["SENTRY_DSN"];
@@ -13,6 +14,7 @@ const ci = process.env["CI"];
 const nextConfig: NextConfig = {
     reactStrictMode: false,
     serverExternalPackages: ["knex"],
+    allowedDevOrigins: ["tvsort.orb.local"],
     images: {
         dangerouslyAllowSVG: true,
         remotePatterns: [
@@ -32,16 +34,19 @@ const nextConfig: NextConfig = {
     },
 };
 
+const configWithPlausible = withPlausibleProxy({
+    customDomain: 'https://tvsort.com',
+})(nextConfig);
+
 export default sentryDsn
-    ? withSentryConfig(nextConfig, {
+    ? withSentryConfig(configWithPlausible, {
           org: sentryOrg as string,
           project: sentryProject as string,
           silent: !ci,
           widenClientFileUpload: true,
           tunnelRoute: "/monitoring",
-          disableLogger: true,
           sourcemaps: {
               deleteSourcemapsAfterUpload: true,
           },
       })
-    : nextConfig;
+    : configWithPlausible;

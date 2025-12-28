@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import CompareEpisodes from "@/components/CompareEpisodes";
 import Results from "@/components/Results";
+import { useAnalytics } from "@/utils/analytics";
 import { api } from "@/utils/apiClient";
 import {
     type Comparison,
@@ -29,6 +30,10 @@ export default function ShowSorter({
     explicitCount,
     episodes,
 }: Props) {
+    const plausible = useAnalytics();
+    const hasTrackedStart = useRef(false);
+    const hasTrackedComplete = useRef(false);
+
     const comparisonMatrix = useMemo(() => {
         const matrixFromStorage =
             typeof localStorage !== "undefined"
@@ -80,8 +85,36 @@ export default function ShowSorter({
         tryQuickSort(comparisonMatrix);
     }, [tryQuickSort, comparisonMatrix]);
 
+    useEffect(() => {
+        if (episodesToMatch && !hasTrackedStart.current) {
+            hasTrackedStart.current = true;
+            plausible("ranking-started", {
+                props: { showId: show.id, episodeCount: episodes.length },
+            });
+        }
+    }, [episodesToMatch, plausible, show.id, episodes.length]);
+
+    useEffect(() => {
+        if (results && !hasTrackedComplete.current) {
+            hasTrackedComplete.current = true;
+            plausible("ranking-completed", {
+                props: {
+                    showId: show.id,
+                    totalComparisons: comparisonMatrix.explicitCount,
+                },
+            });
+        }
+    }, [results, plausible, show.id, comparisonMatrix.explicitCount]);
+
     const onClick = (a: Episode, b: Episode, value: Comparison) => {
         comparisonMatrix.set(a, b, value);
+
+        plausible("comparison-made", {
+            props: {
+                showId: show.id,
+                comparisonNumber: comparisonMatrix.explicitCount,
+            },
+        });
 
         // Save the matrix to localStorage, so we can resume later.
         localStorage.setItem(

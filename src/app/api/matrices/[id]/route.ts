@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/nextjs";
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { trackServerEvent } from "@/utils/analytics";
 import type {
     ApiErrorResponse,
     MarkAsCompletedResponse,
@@ -76,6 +77,15 @@ export async function PATCH(
         });
     } catch (error) {
         Sentry.captureException(error);
+        void trackServerEvent(
+            "api-error",
+            {
+                endpoint: "/api/matrices/[id]",
+                statusCode: 500,
+                errorType: error instanceof Error ? error.name : "Unknown",
+            },
+            request,
+        );
         return NextResponse.json(
             { error: "Internal server error" },
             { status: 500 },
